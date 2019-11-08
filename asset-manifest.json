@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.js": "/react-scatter-plot/static/js/main.088f4ac7.chunk.js",
+    "main.js.map": "/react-scatter-plot/static/js/main.088f4ac7.chunk.js.map",
+    "runtime~main.js": "/react-scatter-plot/static/js/runtime~main.7ffd987a.js",
+    "runtime~main.js.map": "/react-scatter-plot/static/js/runtime~main.7ffd987a.js.map",
+    "static/js/2.5bfccd3c.chunk.js": "/react-scatter-plot/static/js/2.5bfccd3c.chunk.js",
+    "static/js/2.5bfccd3c.chunk.js.map": "/react-scatter-plot/static/js/2.5bfccd3c.chunk.js.map",
+    "index.html": "/react-scatter-plot/index.html",
+    "precache-manifest.86fe414afaf69573ea706605afafd10e.js": "/react-scatter-plot/precache-manifest.86fe414afaf69573ea706605afafd10e.js",
+    "service-worker.js": "/react-scatter-plot/service-worker.js"
+  }
+}
