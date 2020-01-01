@@ -11,7 +11,7 @@ class ScatterPlotBundle extends Component {
     const {
       data,
       dataPointColors,
-      dtWindow,
+      visibleXRange,
       width,
       height,
       minY,
@@ -19,9 +19,7 @@ class ScatterPlotBundle extends Component {
       xAxisKey,
       yAxisKey
     } = this.props;
-    // let filteredData = data.filter(hr => {
-    //   return hr[xAxisKey] >= dtWindow[0] && hr[xAxisKey] <= dtWindow[1];
-    // });
+
     if (data.length < 1 || data === undefined) {
       return null;
     }
@@ -29,15 +27,15 @@ class ScatterPlotBundle extends Component {
     let filteredData = [];
     data.forEach((dataArr, i) => {
       filteredData[i] = dataArr.filter(d => {
-        return d[xAxisKey] >= dtWindow[0] && d[xAxisKey] <= dtWindow[1];
+        return d[xAxisKey] >= visibleXRange[0] && d[xAxisKey] <= visibleXRange[1];
       });
     });
- 
+
     return (
       <ScatterPlot
         data={filteredData}
         dataPointColors={dataPointColors}
-        dtWindow={dtWindow}
+        visibleXRange={visibleXRange}
         width={width}
         height={height}
         minY={minY}

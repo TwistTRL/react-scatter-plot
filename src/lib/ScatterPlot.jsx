@@ -48,7 +48,7 @@ class ScatterPlot extends Component {
     let {
       data,
       dataPointColors,
-      dtWindow,
+      visibleXRange,
       minY,
       maxY,
       xAxisKey,
@@ -67,8 +67,8 @@ class ScatterPlot extends Component {
           let domY,
             domX = toDomXCoord_Linear(
               this.canvasW,
-              dtWindow[0],
-              dtWindow[1],
+              visibleXRange[0],
+              visibleXRange[1],
               d[xAxisKey]
             );
 
