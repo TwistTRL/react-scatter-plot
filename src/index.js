@@ -20,20 +20,20 @@ class App extends PureComponent {
     super(props);
 
     this.state = {
-      visibleXRange: [1492858000000, 1513695600000],
+      visibleXRange: [1512858000000, 1513695600000],
       currentOverlay: null,
-      data: [],
+      dataSets: [],
       dataPointColors: ["#d50000", "#ff6d00", "#546e7a"]
     };
     this.dataSetCount = 4;
   }
 
   componentDidMount() {
-    let data = [];
+    let dataSets = [];
     let dataPointColors = [];
 
     for (let i = 0; i < this.dataSetCount; i++) {
-      data[i] = [
+      dataSets[i] = [
         ...this.generateDummyData(
           [1482858000000, 1513695600000],
           [1, 200],
@@ -45,7 +45,7 @@ class App extends PureComponent {
 
     this.setState({
       ...this.state,
-      data: data,
+      dataSets: dataSets,
       dataPointColors: dataPointColors
     });
   }
@@ -64,19 +64,24 @@ class App extends PureComponent {
   };
 
   render() {
-    let { data, visibleXRange, dataPointColors } = this.state;
+    let { dataSets, visibleXRange, dataPointColors } = this.state;
+    let configs = {
+      legends: {
+        isDynamicYAxis: true, // dynamic y axis = scale y axis according to current visible dataSets points
+        isDynamicXAxis: true // dynamic x axis = use x axis passed in by the plot user
+      }
+    };
 
     return (
       <ScatterPlotBundle
-        data={data}
+        dataSets={dataSets}
         visibleXRange={[...visibleXRange]}
         width={1200}
-        minY={0}
-        maxY={200}
         height={400}
         xAxisKey={"time"}
         yAxisKey={"value"}
         dataPointColors={dataPointColors}
+        configs={configs}
       />
     );
   }

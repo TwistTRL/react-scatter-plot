@@ -9,37 +9,69 @@ class ScatterPlotBundle extends Component {
 
   render() {
     const {
-      data,
+      dataSets,
       dataPointColors,
-      visibleXRange,
       width,
       height,
-      minY,
-      maxY,
       xAxisKey,
-      yAxisKey
+      yAxisKey,
+      configs
     } = this.props;
 
-    if (data.length < 1 || data === undefined) {
+    if (dataSets.length < 1 || dataSets === undefined) {
       return null;
     }
+    let visibleYRange = [Number.MAX_VALUE, Number.MIN_VALUE];
+    let visibleXRange = configs.legends.isDynamicXAxis
+      ? this.props.visibleXRange
+      : [Number.MAX_VALUE, Number.MIN_VALUE];
+    let filteredDataSets = [];
 
-    let filteredData = [];
-    data.forEach((dataArr, i) => {
-      filteredData[i] = dataArr.filter(d => {
-        return d[xAxisKey] >= visibleXRange[0] && d[xAxisKey] <= visibleXRange[1];
+    dataSets.forEach((dataSet, i) => {
+      filteredDataSets[i] = dataSet.filter(dataObj => {
+        if (!configs.legends.isDynamicXAxis) {
+          if (dataObj[xAxisKey] < visibleXRange[0]) {
+            visibleXRange[0] = dataObj[xAxisKey];
+          } else if (dataObj[xAxisKey] > visibleXRange[1]) {
+            visibleXRange[1] = dataObj[xAxisKey];
+          }
+        }
+
+        if (configs.legends.isDynamicYAxis) {
+          if (
+            dataObj[xAxisKey] >= visibleXRange[0] &&
+            dataObj[xAxisKey] <= visibleXRange[1]
+          ) {
+            if (dataObj[yAxisKey] < visibleYRange[0]) {
+              visibleYRange[0] = dataObj[yAxisKey];
+            } else if (dataObj[yAxisKey] > visibleYRange[1]) {
+              visibleYRange[1] = dataObj[yAxisKey];
+            }
+          }
+        } else {
+          if (dataObj[yAxisKey] < visibleYRange[0]) {
+            visibleYRange[0] = dataObj[yAxisKey];
+          } else if (dataObj[yAxisKey] > visibleYRange[1]) {
+            visibleYRange[1] = dataObj[yAxisKey];
+          }
+        }
+
+        return (
+          dataObj[xAxisKey] >= visibleXRange[0] && dataObj[xAxisKey] <= visibleXRange[1]
+        );
       });
     });
 
+    console.log(visibleXRange, visibleYRange)
+
     return (
       <ScatterPlot
-        data={filteredData}
+        dataSets={filteredDataSets}
         dataPointColors={dataPointColors}
         visibleXRange={visibleXRange}
+        visibleYRange={visibleYRange}
         width={width}
         height={height}
-        minY={minY}
-        maxY={maxY}
         xAxisKey={xAxisKey}
         yAxisKey={yAxisKey}
       />

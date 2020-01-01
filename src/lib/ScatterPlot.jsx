@@ -46,35 +46,34 @@ class ScatterPlot extends Component {
 
   drawScatterPlot = ctx => {
     let {
-      data,
+      dataSets,
       dataPointColors,
       visibleXRange,
-      minY,
-      maxY,
+      visibleYRange,
       xAxisKey,
       yAxisKey
     } = this.props;
 
-    if (data === undefined) {
+    if (dataSets === undefined) {
       return;
     }
 
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
 
-    data.forEach((dataArr, i) => {
-      if (dataArr.length > 0) {
-        dataArr.forEach(d => {
+    dataSets.forEach((dataSet, i) => {
+      if (dataSet.length > 0) {
+        dataSet.forEach(dataObj => {
           let domY,
             domX = toDomXCoord_Linear(
               this.canvasW,
               visibleXRange[0],
               visibleXRange[1],
-              d[xAxisKey]
+              dataObj[xAxisKey]
             );
 
           let circle = this.getCircle(dataPointColors[i]);
 
-          domY = toDomYCoord_Linear(this.canvasH, minY, maxY, d[yAxisKey]);
+          domY = toDomYCoord_Linear(this.canvasH, visibleYRange[0], visibleYRange[1], dataObj[yAxisKey]);
 
           ctx.drawImage(circle, domX, domY);
         });

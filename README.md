@@ -1,0 +1,13 @@
+```HTML
+<ScatterPlotBundle
+       data={data}
+       visibleXRange={[...visibleXRange]}
+       width={1200}
+       minY={0}
+       maxY={200}
+       height={400}
+       xAxisKey={"time"}
+       yAxisKey={"value"}
+       dataPointColors={dataPointColors}
+/>
+```
