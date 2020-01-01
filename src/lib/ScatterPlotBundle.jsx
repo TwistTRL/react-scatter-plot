@@ -1,56 +1,52 @@
-import React, { PureComponent } from "react";
-import ScatterPlot from "./ScatterPlot"
+import React, { Component } from "react";
+import ScatterPlot from "./ScatterPlot";
+import isEqual from "lodash.isequal";
 
-class ScatterPlotBundle extends PureComponent {
+class ScatterPlotBundle extends Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    return !isEqual(this.props, nextProps) || this.state !== nextState;
+  }
 
-    filterDataToFitDtWindow = (data, minX, maxX) => {
-        let minIndex = 0, maxIndex = 0
-        let filteredData = data
-
-        filteredData.array.forEach((d, i) => {
-            if (d.time <= minX) {
-                if (d.time < minX) {
-                    if (i > 0) {
-                        minIndex = i - 1
-                    } else {
-                        minIndex = i
-                    }
-                } else {
-                    minIndex = i
-                }
-            }
-
-            // only take the first maxX
-            if (d.time >= maxX && maxIndex === 0) {
-                maxIndex = i
-            }
-        })
-
-        if (maxIndex === 0) {
-            maxIndex = filteredData.length - 1
-        }
-
-        return filteredData.slice(minIndex, maxIndex)
+  render() {
+    const {
+      data,
+      dataPointColors,
+      dtWindow,
+      width,
+      height,
+      minY,
+      maxY,
+      xAxisKey,
+      yAxisKey
+    } = this.props;
+    // let filteredData = data.filter(hr => {
+    //   return hr[xAxisKey] >= dtWindow[0] && hr[xAxisKey] <= dtWindow[1];
+    // });
+    if (data.length < 1 || data === undefined) {
+      return null;
     }
 
-    render() {
-        const { data, dtWindow, width, height } = this.props
-
-        let filteredData = data.filter(hr => {
-            return hr["time"] >= dtWindow[0] && hr["time"] <= dtWindow[1]
-        })
-
-        return (
-            <div className="scatter-plot-wrap" style={{ position: "absolute" }}>
-                <ScatterPlot
-                    data={filteredData}
-                    dtWindow={dtWindow}
-                    width={width}
-                    height={height} />
-                {this.props.currentOverlay ? this.props.render(filteredData) : null}
-            </div>
-        )
-    }
+    let filteredData = [];
+    data.forEach((dataArr, i) => {
+      filteredData[i] = dataArr.filter(d => {
+        return d[xAxisKey] >= dtWindow[0] && d[xAxisKey] <= dtWindow[1];
+      });
+    });
+ 
+    return (
+      <ScatterPlot
+        data={filteredData}
+        dataPointColors={dataPointColors}
+        dtWindow={dtWindow}
+        width={width}
+        height={height}
+        minY={minY}
+        maxY={maxY}
+        xAxisKey={xAxisKey}
+        yAxisKey={yAxisKey}
+      />
+    );
+  }
 }
 
-export default ScatterPlotBundle
+export default ScatterPlotBundle;
