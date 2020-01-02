@@ -1,6 +1,8 @@
 import React, { PureComponent } from "react";
 import ReactDOM from "react-dom";
 import ScatterPlotBundle from "./lib";
+import "./index.css"
+import moment from "moment"
 
 function randomInteger(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -20,7 +22,7 @@ class App extends PureComponent {
     super(props);
 
     this.state = {
-      visibleXRange: [1512858000000, 1513695600000],
+      visibleXRange: [1513158000000, 1513695600000],
       currentOverlay: null,
       dataSets: [],
       dataPointColors: ["#d50000", "#ff6d00", "#546e7a"]
@@ -31,6 +33,10 @@ class App extends PureComponent {
   componentDidMount() {
     let dataSets = [];
     let dataPointColors = [];
+    let start = moment(1482858000000);
+    let end = moment(1513695600000);
+
+    console.log(Math.ceil(moment.duration(end.diff(start, 'days'))))
 
     for (let i = 0; i < this.dataSetCount; i++) {
       dataSets[i] = [
@@ -66,12 +72,17 @@ class App extends PureComponent {
   render() {
     let { dataSets, visibleXRange, dataPointColors } = this.state;
     let configs = {
-      legends: {
+      axis: {
         isDynamicYAxis: true, // dynamic y axis = scale y axis according to current visible dataSets points
-        isDynamicXAxis: true // dynamic x axis = use x axis passed in by the plot user
+        isDynamicXAxis: true, // dynamic x axis = use x axis passed in by the plot user
+        yAxisPadding: 0,
+        xAxisPadding: 0
+      },
+      plotStyling: {
+        dotSize: 20
       }
     };
-
+ 
     return (
       <ScatterPlotBundle
         dataSets={dataSets}

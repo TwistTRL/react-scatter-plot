@@ -9,6 +9,7 @@ class ScatterPlot extends Component {
     this.canvasH = this.props.height;
     // {color: canvas}
     this.dataPointColorCanvasCache = {};
+    this.dotCanvasSize = 6;
   }
 
   componentDidMount() {
@@ -51,12 +52,18 @@ class ScatterPlot extends Component {
       visibleXRange,
       visibleYRange,
       xAxisKey,
-      yAxisKey
+      yAxisKey,
+      configs
     } = this.props;
 
     if (dataSets === undefined) {
       return;
     }
+
+    let dotCanvasSize =
+      configs.plotStyling.dotSize > 0
+        ? configs.plotStyling.dotSize
+        : this.dotCanvasSize;
 
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
 
@@ -64,16 +71,24 @@ class ScatterPlot extends Component {
       if (dataSet.length > 0) {
         dataSet.forEach(dataObj => {
           let domY,
-            domX = toDomXCoord_Linear(
-              this.canvasW,
-              visibleXRange[0],
-              visibleXRange[1],
-              dataObj[xAxisKey]
-            );
+            domX =
+              toDomXCoord_Linear(
+                this.canvasW,
+                visibleXRange[0],
+                visibleXRange[1],
+                dataObj[xAxisKey]
+              ) -
+              dotCanvasSize / 2;
 
-          let circle = this.getCircle(dataPointColors[i]);
+          let circle = this.getCircle(dataPointColors[i], dotCanvasSize);
 
-          domY = toDomYCoord_Linear(this.canvasH, visibleYRange[0], visibleYRange[1], dataObj[yAxisKey]);
+          domY =
+            toDomYCoord_Linear(
+              this.canvasH,
+              visibleYRange[0],
+              visibleYRange[1],
+              dataObj[yAxisKey]
+            ) - dotCanvasSize;
 
           ctx.drawImage(circle, domX, domY);
         });
@@ -81,18 +96,22 @@ class ScatterPlot extends Component {
     });
   };
 
-  getCircle(color) {
-    if (this.dataPointColorCanvasCache[color] === undefined) {
+  getCircle(color, size = 6) {
+    let cachedDataPointColorCanvas = this.dataPointColorCanvasCache[
+      color + size
+    ];
+
+    if (cachedDataPointColorCanvas === undefined) {
       let canvas = document.createElement("canvas");
-      canvas.width = 6;
-      canvas.height = 6;
+      canvas.width = size;
+      canvas.height = size;
       let ctx = canvas.getContext("2d");
-      ctx.arc(3, 3, 2, 0, 2 * Math.PI);
+      ctx.arc(size / 2, size / 2, size / 3, 0, 2 * Math.PI);
       ctx.fillStyle = color;
       ctx.fill();
-      this.dataPointColorCanvasCache[color] = canvas;
+      cachedDataPointColorCanvas = canvas;
     }
-    return this.dataPointColorCanvasCache[color];
+    return cachedDataPointColorCanvas;
   }
 
   render() {

@@ -1,6 +1,12 @@
 import React, { Component } from "react";
-import ScatterPlot from "./ScatterPlot";
 import isEqual from "lodash.isequal";
+import ScatterPlot from "./ScatterPlot";
+import YAxis from "./YAxis";
+import PlotAxisGrid from "./PlotAxisGrid";
+
+function round5(x) {
+  return Math.ceil(x / 5) * 5;
+}
 
 class ScatterPlotBundle extends Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -21,15 +27,21 @@ class ScatterPlotBundle extends Component {
     if (dataSets.length < 1 || dataSets === undefined) {
       return null;
     }
+
+    let { isDynamicXAxis, isDynamicYAxis, yAxisPadding } = configs.axis;
+    let dotSize = configs.plotStyling.dotSize;
     let visibleYRange = [Number.MAX_VALUE, Number.MIN_VALUE];
-    let visibleXRange = configs.legends.isDynamicXAxis
+    let visibleXRange = isDynamicXAxis
       ? this.props.visibleXRange
       : [Number.MAX_VALUE, Number.MIN_VALUE];
+    let visibleYRangeDistance = 0;
     let filteredDataSets = [];
+    let plotWidth = 1200;
+    let yAxisPanelWidth = 40;
 
     dataSets.forEach((dataSet, i) => {
       filteredDataSets[i] = dataSet.filter(dataObj => {
-        if (!configs.legends.isDynamicXAxis) {
+        if (!isDynamicXAxis) {
           if (dataObj[xAxisKey] < visibleXRange[0]) {
             visibleXRange[0] = dataObj[xAxisKey];
           } else if (dataObj[xAxisKey] > visibleXRange[1]) {
@@ -37,7 +49,7 @@ class ScatterPlotBundle extends Component {
           }
         }
 
-        if (configs.legends.isDynamicYAxis) {
+        if (isDynamicYAxis) {
           if (
             dataObj[xAxisKey] >= visibleXRange[0] &&
             dataObj[xAxisKey] <= visibleXRange[1]
@@ -57,24 +69,58 @@ class ScatterPlotBundle extends Component {
         }
 
         return (
-          dataObj[xAxisKey] >= visibleXRange[0] && dataObj[xAxisKey] <= visibleXRange[1]
+          dataObj[xAxisKey] >= visibleXRange[0] &&
+          dataObj[xAxisKey] <= visibleXRange[1]
         );
       });
     });
 
-    console.log(visibleXRange, visibleYRange)
+    visibleYRangeDistance = round5(visibleYRange[1] - visibleYRange[0]);
+    visibleYRange[0] -=
+      yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1; // TODO: figure out y padding
+    visibleYRange[1] +=
+      yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1;
 
     return (
-      <ScatterPlot
-        dataSets={filteredDataSets}
-        dataPointColors={dataPointColors}
-        visibleXRange={visibleXRange}
-        visibleYRange={visibleYRange}
-        width={width}
-        height={height}
-        xAxisKey={xAxisKey}
-        yAxisKey={yAxisKey}
-      />
+      <table className="chart-table" style={{ borderCollapse: "collapse" }}>
+        <tbody>
+          <tr className="chart-table-row">
+            <td className="chart-table-col" style={{ width: yAxisPanelWidth }}>
+              {" "}
+              <YAxis
+                canvasW={yAxisPanelWidth}
+                canvasH={height}
+                minY={visibleYRange[0]}
+                maxY={visibleYRange[1]}
+              />
+            </td>
+            <td className="chart-table-col" style={{ width: plotWidth }}>
+              {" "}
+              <div style={{ position: "absolute" }}>
+                <PlotAxisGrid
+                  canvasW={plotWidth}
+                  canvasH={height}
+                  minY={visibleYRange[0]}
+                  maxY={visibleYRange[1]}
+                />
+              </div>
+              <div style={{ position: "absolute" }}>
+                <ScatterPlot
+                  dataSets={filteredDataSets}
+                  dataPointColors={dataPointColors}
+                  visibleXRange={visibleXRange}
+                  visibleYRange={visibleYRange}
+                  width={width}
+                  height={height}
+                  xAxisKey={xAxisKey}
+                  yAxisKey={yAxisKey}
+                  configs={configs}
+                />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     );
   }
 }

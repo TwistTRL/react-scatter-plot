@@ -10,7 +10,7 @@ function round2(x) {
   return Math.round(Math.ceil(x / 2) * 2);
 }
 
-class YAxis extends Component {
+class PlotAxisGrid extends Component {
   constructor(props) {
     super(props);
     this.canvasW = this.props.canvasW;
@@ -20,20 +20,16 @@ class YAxis extends Component {
   }
 
   componentDidMount() {
-    this.yAxisCanvas = this.refs.yAxisCanvas;
-    this.yAxisCtx = this.yAxisCanvas.getContext("2d");
-    this.drawYAxis(this.yAxisCtx);
+    this.plotAxisGridCanvas = this.refs.plotAxisGridCanvas;
+    this.plotAxisGridCtx = this.plotAxisGridCanvas.getContext("2d");
+    this.drawYAxisGrid(this.plotAxisGridCtx);
   }
 
   componentDidUpdate() {
     this.minY = this.props.minY;
     this.maxY = this.props.maxY;
-    this.drawYAxis(this.yAxisCtx);
+    this.drawYAxisGrid(this.plotAxisGridCtx);
   }
-
-  toDomYCoord_Linear = (height, minY, maxY, dataY) => {
-    return height - (dataY - minY) / ((maxY - minY) / height);
-  };
 
   generateYAxisLabels = (minY, maxY, height, labelPadding, labelTextHeight) => {
     let yAxisLabels = [];
@@ -64,9 +60,7 @@ class YAxis extends Component {
     return yAxisLabels;
   };
 
-  drawYAxis = ctx => {
-    let textXPadding = 10;
-    let yAxisHorizontalLineWidth = 5;
+  drawYAxisGrid = ctx => {
     let yAxisLabels = this.generateYAxisLabels(
       this.minY,
       this.maxY,
@@ -79,31 +73,19 @@ class YAxis extends Component {
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
 
     // y-axis vertical line styling
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 2.5;
-    // text styling
-    ctx.font = "500 13px Museo Sans, sans-serif";
-    ctx.lineWidth = 0.6;
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "right";
-    ctx.fillStyle = "gray";
-
-    // draw the y-axis vertical line
-    ctx.moveTo(this.canvasW, 5);
-    ctx.lineTo(this.canvasW, this.canvasH - 5);
-    ctx.stroke();
+    ctx.strokeStyle = "rgba(211,211,211, 0.6)";
+    ctx.lineWidth = 1;
 
     // draw the labels and horizontal lines
     yAxisLabels.forEach(yAxisLabel => {
-      let domY = this.toDomYCoord_Linear(
+      let domY = toDomYCoord_Linear(
         this.canvasH,
         this.minY,
         this.maxY,
         yAxisLabel
       );
-      ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
+      ctx.moveTo(0, domY);
       ctx.lineTo(this.canvasW, domY);
-      ctx.fillText(yAxisLabel, this.canvasW - textXPadding, domY);
     });
 
     ctx.stroke();
@@ -118,8 +100,8 @@ class YAxis extends Component {
     // reserve className for parent
     return (
       <canvas
-        className="plot-y-axis"
-        ref="yAxisCanvas"
+        className="plot-axis-grid"
+        ref="plotAxisGridCanvas"
         width={this.canvasW}
         height={this.canvasH}
       />
@@ -127,4 +109,4 @@ class YAxis extends Component {
   }
 }
 
-export default YAxis;
+export default PlotAxisGrid;
