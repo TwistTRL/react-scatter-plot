@@ -10,13 +10,21 @@ var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _lodash = require("lodash.isequal");
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _ScatterPlot = require("./ScatterPlot");
 
 var _ScatterPlot2 = _interopRequireDefault(_ScatterPlot);
 
-var _lodash = require("lodash.isequal");
+var _YAxis = require("./YAxis");
 
-var _lodash2 = _interopRequireDefault(_lodash);
+var _YAxis2 = _interopRequireDefault(_YAxis);
+
+var _PlotAxisGrid = require("./PlotAxisGrid");
+
+var _PlotAxisGrid2 = _interopRequireDefault(_PlotAxisGrid);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25,6 +33,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function round5(x) {
+  return Math.ceil(x / 5) * 5;
+}
 
 var ScatterPlotBundle = function (_Component) {
   _inherits(ScatterPlotBundle, _Component);
@@ -44,38 +56,141 @@ var ScatterPlotBundle = function (_Component) {
     key: "render",
     value: function render() {
       var _props = this.props,
-          data = _props.data,
+          dataSets = _props.dataSets,
           dataPointColors = _props.dataPointColors,
-          visibleXRange = _props.visibleXRange,
           width = _props.width,
           height = _props.height,
           minY = _props.minY,
           maxY = _props.maxY,
           xAxisKey = _props.xAxisKey,
-          yAxisKey = _props.yAxisKey;
+          yAxisKey = _props.yAxisKey,
+          configs = _props.configs,
+          isRenderPlotOnly = _props.isRenderPlotOnly;
 
 
-      if (data.length < 1 || data === undefined) {
+      if (dataSets.length < 1 || dataSets === undefined) {
         return null;
       }
 
-      var filteredData = [];
-      data.forEach(function (dataArr, i) {
-        filteredData[i] = dataArr.filter(function (d) {
-          return d[xAxisKey] >= visibleXRange[0] && d[xAxisKey] <= visibleXRange[1];
+      var _configs$axis = configs.axis,
+          isDynamicXAxis = _configs$axis.isDynamicXAxis,
+          isDynamicYAxis = _configs$axis.isDynamicYAxis,
+          yAxisPadding = _configs$axis.yAxisPadding;
+
+      var dotSize = configs.plotStyling.dotSize;
+      var visibleYRange = [Number.MAX_VALUE, Number.MIN_VALUE];
+      var visibleXRange = isDynamicXAxis ? this.props.visibleXRange : [Number.MAX_VALUE, Number.MIN_VALUE];
+      var visibleYRangeDistance = 0;
+      var filteredDataSets = [];
+      var plotWidth = 1200;
+      var yAxisPanelWidth = 40;
+
+      dataSets.forEach(function (dataSet, i) {
+        filteredDataSets[i] = dataSet.filter(function (dataObj) {
+          if (!isDynamicXAxis) {
+            if (dataObj[xAxisKey] < visibleXRange[0]) {
+              visibleXRange[0] = dataObj[xAxisKey];
+            } else if (dataObj[xAxisKey] > visibleXRange[1]) {
+              visibleXRange[1] = dataObj[xAxisKey];
+            }
+          }
+
+          if (isDynamicYAxis) {
+            if (dataObj[xAxisKey] >= visibleXRange[0] && dataObj[xAxisKey] <= visibleXRange[1]) {
+              if (dataObj[yAxisKey] < visibleYRange[0]) {
+                visibleYRange[0] = dataObj[yAxisKey];
+              } else if (dataObj[yAxisKey] > visibleYRange[1]) {
+                visibleYRange[1] = dataObj[yAxisKey];
+              }
+            }
+          } else {
+            if (dataObj[yAxisKey] < visibleYRange[0]) {
+              visibleYRange[0] = dataObj[yAxisKey];
+            } else if (dataObj[yAxisKey] > visibleYRange[1]) {
+              visibleYRange[1] = dataObj[yAxisKey];
+            }
+          }
+
+          return dataObj[xAxisKey] >= visibleXRange[0] && dataObj[xAxisKey] <= visibleXRange[1];
         });
       });
 
+      visibleYRangeDistance = round5(visibleYRange[1] - visibleYRange[0]);
+      visibleYRange[0] -= yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1; // TODO: figure out y padding
+      visibleYRange[1] += yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1;
+
+      if (!isRenderPlotOnly) {
+        visibleYRange = maxY !== null ? [minY, maxY] : visibleYRange;
+        return _react2.default.createElement(
+          "table",
+          { className: "chart-table", style: { borderCollapse: "collapse" } },
+          _react2.default.createElement(
+            "tbody",
+            null,
+            _react2.default.createElement(
+              "tr",
+              { className: "chart-table-row" },
+              _react2.default.createElement(
+                "td",
+                {
+                  className: "chart-table-col",
+                  style: { width: yAxisPanelWidth }
+                },
+                " ",
+                _react2.default.createElement(_YAxis2.default, {
+                  canvasW: yAxisPanelWidth,
+                  canvasH: height,
+                  minY: visibleYRange[0],
+                  maxY: visibleYRange[1],
+                  configs: configs
+                })
+              ),
+              _react2.default.createElement(
+                "td",
+                { className: "chart-table-col", style: { width: plotWidth } },
+                " ",
+                _react2.default.createElement(
+                  "div",
+                  { style: { position: "absolute" } },
+                  _react2.default.createElement(_PlotAxisGrid2.default, {
+                    canvasW: plotWidth,
+                    canvasH: height,
+                    minY: visibleYRange[0],
+                    maxY: visibleYRange[1],
+                    configs: configs
+                  })
+                ),
+                _react2.default.createElement(
+                  "div",
+                  { style: { position: "absolute" } },
+                  _react2.default.createElement(_ScatterPlot2.default, {
+                    dataSets: filteredDataSets,
+                    dataPointColors: dataPointColors,
+                    visibleXRange: visibleXRange,
+                    visibleYRange: visibleYRange,
+                    width: width,
+                    height: height,
+                    xAxisKey: xAxisKey,
+                    yAxisKey: yAxisKey,
+                    configs: configs
+                  })
+                )
+              )
+            )
+          )
+        );
+      }
+
       return _react2.default.createElement(_ScatterPlot2.default, {
-        data: filteredData,
+        dataSets: filteredDataSets,
         dataPointColors: dataPointColors,
         visibleXRange: visibleXRange,
+        visibleYRange: maxY !== null ? [minY, maxY] : visibleYRange,
         width: width,
         height: height,
-        minY: minY,
-        maxY: maxY,
         xAxisKey: xAxisKey,
-        yAxisKey: yAxisKey
+        yAxisKey: yAxisKey,
+        configs: configs
       });
     }
   }]);

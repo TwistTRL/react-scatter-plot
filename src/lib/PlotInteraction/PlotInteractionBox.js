@@ -73,7 +73,7 @@ class PlotInteractionBox extends PureComponent {
     switch (this.state.mode) {
       case MODE_HOVERING:
         return (
-          <>
+          <div>
             <div
               ref={this.ref}
               style={style}
@@ -83,11 +83,11 @@ class PlotInteractionBox extends PureComponent {
             >
               {children}
             </div>
-          </>
+          </div>
         );
       case MODE_CLICKING:
         return (
-          <>
+          <div>
             <div ref={this.ref} style={style}>
               {children}
             </div>
@@ -97,11 +97,11 @@ class PlotInteractionBox extends PureComponent {
               cursor="point"
             />
             <CountDown timeout={200} callback={this.clickTimeout} />
-          </>
+          </div>
         );
       case MODE_AUTOSELECTING:
         return (
-          <>
+          <div>
             <div ref={this.ref} style={style}>
               {children}
             </div>
@@ -111,11 +111,11 @@ class PlotInteractionBox extends PureComponent {
               cursor="nesw-resize"
             />
             <CountDown timeout={500} callback={this.autoSelectingTimeout} />
-          </>
+          </div>
         );
       case MODE_SELECTING:
         return (
-          <>
+          <div>
             <div ref={this.ref} style={style}>
               {children}
             </div>
@@ -124,11 +124,11 @@ class PlotInteractionBox extends PureComponent {
               mouseUpHandler={this.handleMouseUp_Selecting}
               cursor="nesw-resize"
             />
-          </>
+          </div>
         );
       case MODE_PANNING:
         return (
-          <>
+          <div>
             <div ref={this.ref} style={style}>
               {children}
             </div>
@@ -137,7 +137,7 @@ class PlotInteractionBox extends PureComponent {
               mouseUpHandler={this.handleMouseUp_Panning}
               cursor="grabbing"
             />
-          </>
+          </div>
         );
       default:
         return <p>{this.state.mode}</p>;
