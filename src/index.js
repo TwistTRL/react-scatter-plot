@@ -22,7 +22,7 @@ class App extends PureComponent {
     super(props);
 
     this.state = {
-      visibleXRange: [1513158000000, 1513695600000],
+      visibleXRange: [1513058000000, 1513695600000],
       currentOverlay: null,
       dataSets: [],
       dataPointColors: ["#d50000", "#ff6d00", "#546e7a"]
@@ -79,7 +79,7 @@ class App extends PureComponent {
         xAxisPadding: 0
       },
       plotStyling: {
-        dotSize: 20
+        dotSize: 10
       }
     };
  
@@ -92,6 +92,7 @@ class App extends PureComponent {
         xAxisKey={"time"}
         yAxisKey={"value"}
         dataPointColors={dataPointColors}
+        isRenderPlotOny={false}
         configs={configs}
       />
     );

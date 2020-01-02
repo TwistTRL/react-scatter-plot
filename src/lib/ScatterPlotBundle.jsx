@@ -21,7 +21,8 @@ class ScatterPlotBundle extends Component {
       height,
       xAxisKey,
       yAxisKey,
-      configs
+      configs,
+      isRenderPlotOnly
     } = this.props;
 
     if (dataSets.length < 1 || dataSets === undefined) {
@@ -80,47 +81,66 @@ class ScatterPlotBundle extends Component {
       yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1; // TODO: figure out y padding
     visibleYRange[1] +=
       yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1;
-
-    return (
-      <table className="chart-table" style={{ borderCollapse: "collapse" }}>
-        <tbody>
-          <tr className="chart-table-row">
-            <td className="chart-table-col" style={{ width: yAxisPanelWidth }}>
-              {" "}
-              <YAxis
-                canvasW={yAxisPanelWidth}
-                canvasH={height}
-                minY={visibleYRange[0]}
-                maxY={visibleYRange[1]}
-              />
-            </td>
-            <td className="chart-table-col" style={{ width: plotWidth }}>
-              {" "}
-              <div style={{ position: "absolute" }}>
-                <PlotAxisGrid
-                  canvasW={plotWidth}
+      
+    if (!isRenderPlotOnly) {
+      return (
+        <table className="chart-table" style={{ borderCollapse: "collapse" }}>
+          <tbody>
+            <tr className="chart-table-row">
+              <td
+                className="chart-table-col"
+                style={{ width: yAxisPanelWidth }}
+              >
+                {" "}
+                <YAxis
+                  canvasW={yAxisPanelWidth}
                   canvasH={height}
                   minY={visibleYRange[0]}
                   maxY={visibleYRange[1]}
                 />
-              </div>
-              <div style={{ position: "absolute" }}>
-                <ScatterPlot
-                  dataSets={filteredDataSets}
-                  dataPointColors={dataPointColors}
-                  visibleXRange={visibleXRange}
-                  visibleYRange={visibleYRange}
-                  width={width}
-                  height={height}
-                  xAxisKey={xAxisKey}
-                  yAxisKey={yAxisKey}
-                  configs={configs}
-                />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+              <td className="chart-table-col" style={{ width: plotWidth }}>
+                {" "}
+                <div style={{ position: "absolute" }}>
+                  <PlotAxisGrid
+                    canvasW={plotWidth}
+                    canvasH={height}
+                    minY={visibleYRange[0]}
+                    maxY={visibleYRange[1]}
+                  />
+                </div>
+                <div style={{ position: "absolute" }}>
+                  <ScatterPlot
+                    dataSets={filteredDataSets}
+                    dataPointColors={dataPointColors}
+                    visibleXRange={visibleXRange}
+                    visibleYRange={visibleYRange}
+                    width={width}
+                    height={height}
+                    xAxisKey={xAxisKey}
+                    yAxisKey={yAxisKey}
+                    configs={configs}
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      );
+    }
+
+    return (
+      <ScatterPlot
+        dataSets={filteredDataSets}
+        dataPointColors={dataPointColors}
+        visibleXRange={visibleXRange}
+        visibleYRange={visibleYRange}
+        width={width}
+        height={height}
+        xAxisKey={xAxisKey}
+        yAxisKey={yAxisKey}
+        configs={configs}
+      />
     );
   }
 }
