@@ -1,8 +1,9 @@
 import React, { PureComponent } from "react";
 import ReactDOM from "react-dom";
 import ScatterPlotBundle from "./lib";
-import "./index.css"
-import moment from "moment"
+import PlotInteractionBoxProvider from "./lib/PlotInteraction/PlotInteractionBoxProvider";
+import moment from "moment";
+import "./index.css";
 
 function randomInteger(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -25,8 +26,12 @@ class App extends PureComponent {
       visibleXRange: [1513058000000, 1513695600000],
       currentOverlay: null,
       dataSets: [],
-      dataPointColors: ["#d50000", "#ff6d00", "#546e7a"]
+      dataPointColors: ["#d50000", "#ff6d00", "#546e7a"],
+      minY: 0,
+      maxY: 200
     };
+    this.prevMaxY = 200;
+    this.prevPanDist = 0;
     this.dataSetCount = 4;
   }
 
@@ -36,13 +41,13 @@ class App extends PureComponent {
     let start = moment(1482858000000);
     let end = moment(1513695600000);
 
-    console.log(Math.ceil(moment.duration(end.diff(start, 'days'))))
+    console.log(Math.ceil(moment.duration(end.diff(start, "days"))));
 
     for (let i = 0; i < this.dataSetCount; i++) {
       dataSets[i] = [
         ...this.generateDummyData(
           [1482858000000, 1513695600000],
-          [1, 200],
+          [1, this.state.maxY],
           100000000
         )
       ];
@@ -69,32 +74,61 @@ class App extends PureComponent {
     return dummyData;
   };
 
+  handlePan = e => {
+    let newMaxY =
+      this.state.maxY + (e.end.domY - e.start.domY - this.prevPanDist);
+    if (newMaxY > 150) {
+      this.setState({
+        ...this.state,
+        maxY: this.state.maxY + (e.end.domY - e.start.domY - this.prevPanDist)
+      });
+      this.prevPanDist = e.end.domY - e.start.domY;
+    }
+  };
+
+  handlePanned = e => {
+    this.prevPanDist = 0;
+  };
+
   render() {
-    let { dataSets, visibleXRange, dataPointColors } = this.state;
+    let { dataSets, visibleXRange, dataPointColors, minY, maxY } = this.state;
     let configs = {
       axis: {
         isDynamicYAxis: true, // dynamic y axis = scale y axis according to current visible dataSets points
         isDynamicXAxis: true, // dynamic x axis = use x axis passed in by the plot user
-        yAxisPadding: 0,
+        yAxisLabelPadding: 20,
         xAxisPadding: 0
       },
       plotStyling: {
-        dotSize: 10
+        dotSize: 20
       }
     };
  
     return (
-      <ScatterPlotBundle
-        dataSets={dataSets}
-        visibleXRange={[...visibleXRange]}
-        width={1200}
-        height={400}
-        xAxisKey={"time"}
-        yAxisKey={"value"}
-        dataPointColors={dataPointColors}
-        isRenderPlotOny={false}
-        configs={configs}
-      />
+      <>
+        <div style={{ position: "absolute", cursor: "ns-resize" }}>
+          <PlotInteractionBoxProvider
+            width={40}
+            height={400}
+            handlePan={this.handlePan}
+            handlePanned={this.handlePanned}
+            render={() => {}}
+          />
+        </div>
+        <ScatterPlotBundle
+          dataSets={dataSets}
+          visibleXRange={[...visibleXRange]}
+          minY={minY}
+          maxY={maxY}
+          width={1200}
+          height={400}
+          xAxisKey={"time"}
+          yAxisKey={"value"}
+          dataPointColors={dataPointColors}
+          isRenderPlotOnly={false}
+          configs={configs}
+        />
+      </>
     );
   }
 }

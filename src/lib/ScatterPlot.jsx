@@ -25,7 +25,7 @@ class ScatterPlot extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     return !isEqual(this.props, nextProps) || this.state !== nextState;
   }
-  
+
   drawScatterPlot = ctx => {
     let {
       dataSets,
@@ -47,7 +47,8 @@ class ScatterPlot extends Component {
         : this.dotCanvasSize;
 
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
-
+    ctx.beginPath();
+    
     dataSets.forEach((dataSet, i) => {
       if (dataSet.length > 0) {
         dataSet.forEach(dataObj => {

@@ -19,6 +19,8 @@ class ScatterPlotBundle extends Component {
       dataPointColors,
       width,
       height,
+      minY,
+      maxY,
       xAxisKey,
       yAxisKey,
       configs,
@@ -81,8 +83,9 @@ class ScatterPlotBundle extends Component {
       yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1; // TODO: figure out y padding
     visibleYRange[1] +=
       yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1;
-      
+
     if (!isRenderPlotOnly) {
+      visibleYRange = maxY !== null ? [minY, maxY] : visibleYRange;
       return (
         <table className="chart-table" style={{ borderCollapse: "collapse" }}>
           <tbody>
@@ -97,6 +100,7 @@ class ScatterPlotBundle extends Component {
                   canvasH={height}
                   minY={visibleYRange[0]}
                   maxY={visibleYRange[1]}
+                  configs={configs}
                 />
               </td>
               <td className="chart-table-col" style={{ width: plotWidth }}>
@@ -107,6 +111,7 @@ class ScatterPlotBundle extends Component {
                     canvasH={height}
                     minY={visibleYRange[0]}
                     maxY={visibleYRange[1]}
+                    configs={configs}
                   />
                 </div>
                 <div style={{ position: "absolute" }}>
@@ -134,7 +139,7 @@ class ScatterPlotBundle extends Component {
         dataSets={filteredDataSets}
         dataPointColors={dataPointColors}
         visibleXRange={visibleXRange}
-        visibleYRange={visibleYRange}
+        visibleYRange={maxY !== null ? [minY, maxY] : visibleYRange}
         width={width}
         height={height}
         xAxisKey={xAxisKey}

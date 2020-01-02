@@ -35,7 +35,13 @@ class YAxis extends Component {
     return height - (dataY - minY) / ((maxY - minY) / height);
   };
 
-  generateYAxisLabels = (minY, maxY, height, labelPadding, labelTextHeight) => {
+  generateYAxisLabels = (
+    minY,
+    maxY,
+    height,
+    labelPadding = 20,
+    labelTextHeight
+  ) => {
     let yAxisLabels = [];
     let numOfLabelsCanFit = Math.round(
       height / (labelTextHeight + labelPadding)
@@ -67,16 +73,18 @@ class YAxis extends Component {
   drawYAxis = ctx => {
     let textXPadding = 10;
     let yAxisHorizontalLineWidth = 5;
+    let yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
     let yAxisLabels = this.generateYAxisLabels(
       this.minY,
       this.maxY,
       this.canvasH,
-      20,
+      yAxisLabelPadding,
       20
     );
 
     // clear canvas
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
+    ctx.beginPath();
 
     // y-axis vertical line styling
     ctx.strokeStyle = "black";

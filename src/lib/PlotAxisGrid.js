@@ -71,7 +71,7 @@ class PlotAxisGrid extends Component {
 
     // clear canvas
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
-
+    ctx.beginPath()
     // y-axis vertical line styling
     ctx.strokeStyle = "rgba(211,211,211, 0.6)";
     ctx.lineWidth = 1;
