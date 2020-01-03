@@ -32,7 +32,7 @@ class PlotAxisGrid extends Component {
   }
 
   generateYAxisLabels(minY, maxY, height, labelPadding, labelTextHeight) {
-    let yAxisLabels = [];
+    this.yAxisLabels = [];
     let numOfLabelsCanFit = Math.round(
       height / (labelTextHeight + labelPadding)
     );
@@ -45,7 +45,7 @@ class PlotAxisGrid extends Component {
       curYAxisLabel > round5(minY);
       curYAxisLabel -= yAxisLabelInterval
     ) {
-      yAxisLabels.push(curYAxisLabel);
+      this.yAxisLabels.push(curYAxisLabel);
     }
 
     // positive labels
@@ -54,14 +54,12 @@ class PlotAxisGrid extends Component {
       curYAxisLabel < round5(maxY);
       curYAxisLabel += yAxisLabelInterval
     ) {
-      yAxisLabels.push(curYAxisLabel);
+      this.yAxisLabels.push(curYAxisLabel);
     }
-
-    return yAxisLabels;
   }
 
   drawYAxisGrid(ctx) {
-    let yAxisLabels = this.generateYAxisLabels(
+   this.generateYAxisLabels(
       this.minY,
       this.maxY,
       this.canvasH,
@@ -76,12 +74,12 @@ class PlotAxisGrid extends Component {
     ctx.strokeStyle = "rgba(211,211,211, 0.6)";
     ctx.lineWidth = 1;
 
-    for (let i = 0; i < yAxisLabels.length; i++) {
+    for (let i = 0; i < this.yAxisLabels.length; i++) {
       let domY = toDomYCoord_Linear(
         this.canvasH,
         this.minY,
         this.maxY,
-        yAxisLabels[i]
+        this.yAxisLabels[i]
       );
       ctx.moveTo(0, domY);
       ctx.lineTo(this.canvasW, domY);

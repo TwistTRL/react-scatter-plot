@@ -35,14 +35,8 @@ class YAxis extends Component {
     return height - (dataY - minY) / ((maxY - minY) / height);
   };
 
-  generateYAxisLabels = (
-    minY,
-    maxY,
-    height,
-    labelPadding = 20,
-    labelTextHeight
-  ) => {
-    let yAxisLabels = [];
+  generateYAxisLabels(minY, maxY, height, labelPadding = 20, labelTextHeight) {
+    this.yAxisLabels = [];
     let numOfLabelsCanFit = Math.round(
       height / (labelTextHeight + labelPadding)
     );
@@ -55,7 +49,7 @@ class YAxis extends Component {
       curYAxisLabel > round5(minY);
       curYAxisLabel -= yAxisLabelInterval
     ) {
-      yAxisLabels.push(curYAxisLabel);
+      this.yAxisLabels.push(curYAxisLabel);
     }
 
     // positive labels
@@ -64,17 +58,15 @@ class YAxis extends Component {
       curYAxisLabel < round5(maxY);
       curYAxisLabel += yAxisLabelInterval
     ) {
-      yAxisLabels.push(curYAxisLabel);
+      this.yAxisLabels.push(curYAxisLabel);
     }
-
-    return yAxisLabels;
-  };
+  }
 
   drawYAxis = ctx => {
     let textXPadding = 10;
     let yAxisHorizontalLineWidth = 5;
     let yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
-    let yAxisLabels = this.generateYAxisLabels(
+    this.generateYAxisLabels(
       this.minY,
       this.maxY,
       this.canvasH,
@@ -102,16 +94,16 @@ class YAxis extends Component {
     ctx.stroke();
 
     // draw the labels and horizontal lines
-    for (let i = 0; i < yAxisLabels.length; i++) {
+    for (let i = 0; i < this.yAxisLabels.length; i++) {
       let domY = this.toDomYCoord_Linear(
         this.canvasH,
         this.minY,
         this.maxY,
-        yAxisLabels[i]
+        this.yAxisLabels[i]
       );
       ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
       ctx.lineTo(this.canvasW, domY);
-      ctx.fillText(yAxisLabels[i], this.canvasW - textXPadding, domY);
+      ctx.fillText(this.yAxisLabels[i], this.canvasW - textXPadding, domY);
     }
 
     ctx.stroke();
