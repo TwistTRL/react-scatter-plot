@@ -102,17 +102,17 @@ class YAxis extends Component {
     ctx.stroke();
 
     // draw the labels and horizontal lines
-    yAxisLabels.forEach(yAxisLabel => {
+    for (let i = 0; i < yAxisLabels.length; i++) {
       let domY = this.toDomYCoord_Linear(
         this.canvasH,
         this.minY,
         this.maxY,
-        yAxisLabel
+        yAxisLabels[i]
       );
       ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
       ctx.lineTo(this.canvasW, domY);
-      ctx.fillText(yAxisLabel, this.canvasW - textXPadding, domY);
-    });
+      ctx.fillText(yAxisLabels[i], this.canvasW - textXPadding, domY);
+    }
 
     ctx.stroke();
   };

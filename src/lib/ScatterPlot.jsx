@@ -26,7 +26,7 @@ class ScatterPlot extends Component {
     return !isEqual(this.props, nextProps) || this.state !== nextState;
   }
 
-  drawScatterPlot = ctx => {
+  drawScatterPlot(ctx) {
     let {
       dataSets,
       dataPointColors,
@@ -48,17 +48,19 @@ class ScatterPlot extends Component {
 
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
     ctx.beginPath();
-    
-    dataSets.forEach((dataSet, i) => {
-      if (dataSet.length > 0) {
-        dataSet.forEach(dataObj => {
+
+    for (let i = 0; i < dataSets.length; i++) {
+      let curDataSet = dataSets[i];
+      if (curDataSet.length > 0) {
+        for (let j = 0; j < curDataSet.length; j++) {
+          let curDataObj = curDataSet[j];
           let domY,
             domX =
               toDomXCoord_Linear(
                 this.canvasW,
                 visibleXRange[0],
                 visibleXRange[1],
-                dataObj[xAxisKey]
+                curDataObj[xAxisKey]
               ) -
               dotCanvasSize / 2;
 
@@ -69,15 +71,15 @@ class ScatterPlot extends Component {
               this.canvasH,
               visibleYRange[0],
               visibleYRange[1],
-              dataObj[yAxisKey]
+              curDataObj[yAxisKey]
             ) -
             dotCanvasSize / 2;
 
           ctx.drawImage(circle, domX, domY);
-        });
+        }
       }
-    });
-  };
+    }
+  }
 
   getCircle(color, size = 6) {
     let cachedDataPointColorCanvas = this.dataPointColorCanvasCache[

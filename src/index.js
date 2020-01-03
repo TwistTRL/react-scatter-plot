@@ -61,7 +61,7 @@ class App extends PureComponent {
     });
   }
 
-  generateDummyData = (xRange, yRange, dataFreq) => {
+  generateDummyData(xRange, yRange, dataFreq) {
     let dummyData = [];
 
     for (let curX = xRange[0]; curX < xRange[1]; curX += dataFreq) {
@@ -72,7 +72,7 @@ class App extends PureComponent {
     }
 
     return dummyData;
-  };
+  }
 
   handlePan = e => {
     let newMaxY =
@@ -103,7 +103,7 @@ class App extends PureComponent {
         dotSize: 20
       }
     };
- 
+
     return (
       <>
         <div style={{ position: "absolute", cursor: "ns-resize" }}>

@@ -31,7 +31,7 @@ class PlotAxisGrid extends Component {
     this.drawYAxisGrid(this.plotAxisGridCtx);
   }
 
-  generateYAxisLabels = (minY, maxY, height, labelPadding, labelTextHeight) => {
+  generateYAxisLabels(minY, maxY, height, labelPadding, labelTextHeight) {
     let yAxisLabels = [];
     let numOfLabelsCanFit = Math.round(
       height / (labelTextHeight + labelPadding)
@@ -58,9 +58,9 @@ class PlotAxisGrid extends Component {
     }
 
     return yAxisLabels;
-  };
+  }
 
-  drawYAxisGrid = ctx => {
+  drawYAxisGrid(ctx) {
     let yAxisLabels = this.generateYAxisLabels(
       this.minY,
       this.maxY,
@@ -71,26 +71,24 @@ class PlotAxisGrid extends Component {
 
     // clear canvas
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
-    ctx.beginPath()
+    ctx.beginPath();
     // y-axis vertical line styling
     ctx.strokeStyle = "rgba(211,211,211, 0.6)";
     ctx.lineWidth = 1;
 
-    // draw the labels and horizontal lines
-    yAxisLabels.forEach(yAxisLabel => {
+    for (let i = 0; i < yAxisLabels.length; i++) {
       let domY = toDomYCoord_Linear(
         this.canvasH,
         this.minY,
         this.maxY,
-        yAxisLabel
+        yAxisLabels[i]
       );
       ctx.moveTo(0, domY);
       ctx.lineTo(this.canvasW, domY);
-    });
-
+    }
     ctx.stroke();
-  };
-
+  }
+  
   roundToNearestTenth(n) {
     return (parseInt(n / 10, 10) + 1) * 10;
   }
