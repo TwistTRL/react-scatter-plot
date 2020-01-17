@@ -82,7 +82,7 @@ class YAxis extends Component {
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2.5;
     // text styling
-    ctx.font = "500 13px Museo Sans, sans-serif";
+    ctx.font = "500 13px MuseoSans, sans-serif";
     ctx.lineWidth = 0.6;
     ctx.textBaseline = "middle";
     ctx.textAlign = "right";

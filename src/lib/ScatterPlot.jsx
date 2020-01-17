@@ -54,28 +54,33 @@ class ScatterPlot extends Component {
       if (curDataSet.length > 0) {
         for (let j = 0; j < curDataSet.length; j++) {
           let curDataObj = curDataSet[j];
-          let domY,
-            domX =
-              toDomXCoord_Linear(
-                this.canvasW,
-                visibleXRange[0],
-                visibleXRange[1],
-                curDataObj[xAxisKey]
+          if (
+            curDataObj[xAxisKey] >= visibleXRange[0] &&
+            curDataObj[xAxisKey] <= visibleXRange[1]
+          ) {
+            let domY,
+              domX =
+                toDomXCoord_Linear(
+                  this.canvasW,
+                  visibleXRange[0],
+                  visibleXRange[1],
+                  curDataObj[xAxisKey]
+                ) -
+                dotCanvasSize / 2;
+
+            let circle = this.getCircle(dataPointColors[i], dotCanvasSize);
+
+            domY =
+              toDomYCoord_Linear(
+                this.canvasH,
+                visibleYRange[0],
+                visibleYRange[1],
+                curDataObj[yAxisKey]
               ) -
               dotCanvasSize / 2;
 
-          let circle = this.getCircle(dataPointColors[i], dotCanvasSize);
-
-          domY =
-            toDomYCoord_Linear(
-              this.canvasH,
-              visibleYRange[0],
-              visibleYRange[1],
-              curDataObj[yAxisKey]
-            ) -
-            dotCanvasSize / 2;
-
-          ctx.drawImage(circle, domX, domY);
+            ctx.drawImage(circle, domX, domY);
+          }
         }
       }
     }

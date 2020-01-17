@@ -45,53 +45,41 @@ class ScatterPlotBundle extends Component {
         this.prevMaxX !== this.props.visibleXRange[1]) &&
       isDynamicXAxis
     ) {
-      this.filteredDataSets = [];
       this.prevMinx = this.props.visibleXRange[0];
       this.prevMaxX = this.props.visibleXRange[1];
 
-      for (let i = 0; i < dataSets.length; i++) {
-        let curDataSet = dataSets[i];
-        for (let j = 0; j < curDataSet.length; j++) {
-          let curDataObj = curDataSet[j];
-          if (!isDynamicXAxis) {
-            if (curDataObj[xAxisKey] < visibleXRange[0]) {
-              visibleXRange[0] = curDataObj[xAxisKey];
-            } else if (curDataObj[xAxisKey] > visibleXRange[1]) {
-              visibleXRange[1] = curDataObj[xAxisKey];
-            }
-          }
+      // for (let i = 0; i < dataSets.length; i++) {
+      //   let curDataSet = dataSets[i];
+      //   for (let j = 0; j < curDataSet.length; j++) {
+      //     let curDataObj = curDataSet[j];
+      //     if (!isDynamicXAxis) {
+      //       if (curDataObj[xAxisKey] < visibleXRange[0]) {
+      //         visibleXRange[0] = curDataObj[xAxisKey];
+      //       } else if (curDataObj[xAxisKey] > visibleXRange[1]) {
+      //         visibleXRange[1] = curDataObj[xAxisKey];
+      //       }
+      //     }
 
-          if (isDynamicYAxis) {
-            if (
-              curDataObj[xAxisKey] >= visibleXRange[0] &&
-              curDataObj[xAxisKey] <= visibleXRange[1]
-            ) {
-              if (curDataObj[yAxisKey] < visibleYRange[0]) {
-                visibleYRange[0] = curDataObj[yAxisKey];
-              } else if (curDataObj[yAxisKey] > visibleYRange[1]) {
-                visibleYRange[1] = curDataObj[yAxisKey];
-              }
-            }
-          } else {
-            if (curDataObj[yAxisKey] < visibleYRange[0]) {
-              visibleYRange[0] = curDataObj[yAxisKey];
-            } else if (curDataObj[yAxisKey] > visibleYRange[1]) {
-              visibleYRange[1] = curDataObj[yAxisKey];
-            }
-          }
-
-          if (
-            curDataObj[xAxisKey] >= visibleXRange[0] &&
-            curDataObj[xAxisKey] <= visibleXRange[1]
-          ) {
-            if (this.filteredDataSets[i] !== undefined) {
-              this.filteredDataSets[i].push(curDataObj);
-            } else {
-              this.filteredDataSets[i] = [curDataObj];
-            }
-          }
-        }
-      }
+      //     if (isDynamicYAxis) {
+      //       if (
+      //         curDataObj[xAxisKey] >= visibleXRange[0] &&
+      //         curDataObj[xAxisKey] <= visibleXRange[1]
+      //       ) {
+      //         if (curDataObj[yAxisKey] < visibleYRange[0]) {
+      //           visibleYRange[0] = curDataObj[yAxisKey];
+      //         } else if (curDataObj[yAxisKey] > visibleYRange[1]) {
+      //           visibleYRange[1] = curDataObj[yAxisKey];
+      //         }
+      //       }
+      //     } else {
+      //       if (curDataObj[yAxisKey] < visibleYRange[0]) {
+      //         visibleYRange[0] = curDataObj[yAxisKey];
+      //       } else if (curDataObj[yAxisKey] > visibleYRange[1]) {
+      //         visibleYRange[1] = curDataObj[yAxisKey];
+      //       }
+      //     }
+      //   }
+      // }
     }
 
     visibleYRangeDistance = round5(visibleYRange[1] - visibleYRange[0]);
@@ -132,7 +120,7 @@ class ScatterPlotBundle extends Component {
                 </div>
                 <div style={{ position: "absolute" }}>
                   <ScatterPlot
-                    dataSets={this.filteredDataSets}
+                    dataSets={dataSets}
                     dataPointColors={dataPointColors}
                     visibleXRange={visibleXRange}
                     visibleYRange={visibleYRange}
@@ -152,7 +140,7 @@ class ScatterPlotBundle extends Component {
 
     return (
       <ScatterPlot
-        dataSets={this.filteredDataSets}
+        dataSets={dataSets}
         dataPointColors={dataPointColors}
         visibleXRange={visibleXRange}
         visibleYRange={maxY !== null ? [minY, maxY] : visibleYRange}

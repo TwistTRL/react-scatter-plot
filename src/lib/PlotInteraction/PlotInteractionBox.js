@@ -64,12 +64,13 @@ class PlotInteractionBox extends PureComponent {
     this.ref = React.createRef();
     this.initialMouseDownPosition = null;
     this.prevClickTimeStamp = null;
+    this.handleMouseMove_Panning = this.handleMouseMove_Panning.bind(this);
   }
 
   render() {
     let { width, height, children } = this.props;
     let style = { width, height };
-    
+
     switch (this.state.mode) {
       case MODE_HOVERING:
         return (
@@ -255,12 +256,12 @@ class PlotInteractionBox extends PureComponent {
     this.transition(ACTION_MOUSEUP);
   };
 
-  handleMouseMove_Panning = ev => {
+  handleMouseMove_Panning(ev) {
     let { panningHandler } = this.props;
     let { initialMouseDownPosition } = this;
     let myEV = this.getCustomEventObject(ev);
     panningHandler({ start: initialMouseDownPosition, end: myEV });
-  };
+  }
 
   handleMouseUp_Panning = ev => {
     let { pannedHandler } = this.props;
