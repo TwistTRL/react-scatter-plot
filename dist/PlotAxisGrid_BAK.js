@@ -44,40 +44,60 @@ var PlotAxisGrid = function (_Component) {
     _this.canvasH = _this.props.canvasH;
     _this.minY = _this.props.minY;
     _this.maxY = _this.props.maxY;
+    console.log(_this.canvasW);
     return _this;
   }
 
   _createClass(PlotAxisGrid, [{
     key: "componentDidMount",
     value: function componentDidMount() {
+      var yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
       this.plotAxisGridCanvas = this.refs.plotAxisGridCanvas;
       this.plotAxisGridCtx = this.plotAxisGridCanvas.getContext("2d");
-      this.drawYAxisGrid(this.plotAxisGridCtx);
+
+      var canvas = document.createElement("canvas");
+      canvas.width = this.canvasW;
+      canvas.height = 1;
+      var ctx = canvas.getContext("2d");
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, this.canvasW);
+      ctx.stroke();
+      this.cachedGridLine = canvas;
+
+      this.generateYAxisLabels(this.maxY * 1.5);
+      this.drawYAxisGrid(this.plotAxisGridCtx, this.getYAxisSkipInterval(this.minY, this.maxY, this.canvasH, yAxisLabelPadding, 20));
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate() {
+      var yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
       this.minY = this.props.minY;
       this.maxY = this.props.maxY;
-      this.drawYAxisGrid(this.plotAxisGridCtx);
+      this.drawYAxisGrid(this.plotAxisGridCtx, this.getYAxisSkipInterval(this.minY, this.maxY, this.canvasH, yAxisLabelPadding, 20));
     }
   }, {
-    key: "generateYAxisIntervals",
-    value: function generateYAxisIntervals(minY, maxY, height, labelPadding, labelTextHeight) {
-      this.yAxisIntervals = [];
+    key: "getYAxisSkipInterval",
+    value: function getYAxisSkipInterval(minY, maxY, height) {
+      var labelPadding = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 20;
+      var labelTextHeight = arguments[4];
+
       var numOfLabelsCanFit = Math.round(height / (labelTextHeight + labelPadding));
-      var yAxisSpan = round5(maxY - minY);
-      var yAxisLabelInterval = round5(yAxisSpan / numOfLabelsCanFit);
+
+      return round5((maxY - minY) / numOfLabelsCanFit);
+    }
+  }, {
+    key: "generateYAxisLabels",
+    value: function generateYAxisLabels(maxY) {
+      this.yAxisLabels = [];
+      var yAxisLabelInterval = 1;
 
       for (var curYAxisLabel = 0; curYAxisLabel < round5(maxY); curYAxisLabel += yAxisLabelInterval) {
-        this.yAxisIntervals.push(curYAxisLabel);
+        this.yAxisLabels.push(curYAxisLabel);
       }
     }
   }, {
     key: "drawYAxisGrid",
-    value: function drawYAxisGrid(ctx) {
-      this.generateYAxisIntervals(this.minY, this.maxY, this.canvasH, 20, 20);
-
+    value: function drawYAxisGrid(ctx, yAxisSkipInterval) {
       // clear canvas
       ctx.clearRect(0, 0, this.canvasW, this.canvasH);
       ctx.beginPath();
@@ -85,21 +105,26 @@ var PlotAxisGrid = function (_Component) {
       ctx.strokeStyle = "rgba(211,211,211, 0.6)";
       ctx.lineWidth = 1;
 
-      for (var i = 0; i < this.yAxisIntervals.length; i++) {
-        var domY = (0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, this.minY, this.maxY, this.yAxisIntervals[i]);
-        ctx.moveTo(0, domY);
-        ctx.lineTo(this.canvasW, domY);
+      for (var i = 0; i < this.yAxisLabels.length; i++) {
+        if (i % yAxisSkipInterval === 0) {
+          var domY = (0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, this.minY, this.maxY, this.yAxisLabels[i]);
+          ctx.moveTo(0, domY);
+          ctx.lineTo(this.canvasW, domY);
+          // ctx.drawImage(this.cachedGridLine, 0, domY);
+        }
       }
-      ctx.stroke();
 
       if (this.minY < 0) {
-        for (var _i = 0; _i < this.yAxisIntervals.length; _i++) {
-          var _domY = (0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, this.minY, this.maxY, -this.yAxisIntervals[_i]);
-          ctx.moveTo(0, _domY);
-          ctx.lineTo(this.canvasW, _domY);
+        for (var _i = 0; _i < this.yAxisLabels.length; _i++) {
+          if (_i % yAxisSkipInterval === 0) {
+            var _domY = (0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, this.minY, this.maxY, -this.yAxisLabels[_i]);
+            ctx.moveTo(0, _domY);
+            ctx.lineTo(this.canvasW, _domY);
+          }
         }
-        ctx.stroke();
       }
+
+      ctx.stroke();
     }
   }, {
     key: "roundToNearestTenth",

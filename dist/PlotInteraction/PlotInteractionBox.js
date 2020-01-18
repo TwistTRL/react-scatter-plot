@@ -159,27 +159,12 @@ var PlotInteractionBox = function (_PureComponent) {
       _this.transition(ACTION_MOUSEUP);
     };
 
-    _this.handleMouseMove_Panning = function (ev) {
-      var panningHandler = _this.props.panningHandler;
-      var initialMouseDownPosition = _this.initialMouseDownPosition;
-
-      var myEV = _this.getCustomEventObject(ev);
-      panningHandler({ start: initialMouseDownPosition, end: myEV });
-    };
-
-    _this.handleMouseUp_Panning = function (ev) {
-      var pannedHandler = _this.props.pannedHandler;
-      var initialMouseDownPosition = _this.initialMouseDownPosition;
-
-      var myEV = _this.getCustomEventObject(ev);
-      pannedHandler({ start: initialMouseDownPosition, end: myEV });
-      _this.transition(ACTION_MOUSEUP);
-    };
-
     _this.state = { mode: MODE_HOVERING };
     _this.ref = _react2.default.createRef();
     _this.initialMouseDownPosition = null;
     _this.prevClickTimeStamp = null;
+    _this.handleMouseMove_Panning = _this.handleMouseMove_Panning.bind(_this);
+    _this.handleMouseUp_Panning = _this.handleMouseUp_Panning.bind(_this);
     return _this;
   }
 
@@ -305,6 +290,25 @@ var PlotInteractionBox = function (_PureComponent) {
       var domX = clientX - left;
       var domY = clientY - top;
       return { domX: domX, domY: domY, clientX: clientX, clientY: clientY };
+    }
+  }, {
+    key: "handleMouseMove_Panning",
+    value: function handleMouseMove_Panning(ev) {
+      var panningHandler = this.props.panningHandler;
+      var initialMouseDownPosition = this.initialMouseDownPosition;
+
+      var myEV = this.getCustomEventObject(ev);
+      panningHandler({ start: initialMouseDownPosition, end: myEV });
+    }
+  }, {
+    key: "handleMouseUp_Panning",
+    value: function handleMouseUp_Panning(ev) {
+      var pannedHandler = this.props.pannedHandler;
+      var initialMouseDownPosition = this.initialMouseDownPosition;
+
+      var myEV = this.getCustomEventObject(ev);
+      pannedHandler({ start: initialMouseDownPosition, end: myEV });
+      this.transition(ACTION_MOUSEUP);
     }
   }]);
 

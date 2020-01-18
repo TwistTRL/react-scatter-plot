@@ -32,42 +32,6 @@ var ScatterPlot = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (ScatterPlot.__proto__ || Object.getPrototypeOf(ScatterPlot)).call(this, props));
 
-    _this.drawScatterPlot = function (ctx) {
-      var _this$props = _this.props,
-          dataSets = _this$props.dataSets,
-          dataPointColors = _this$props.dataPointColors,
-          visibleXRange = _this$props.visibleXRange,
-          visibleYRange = _this$props.visibleYRange,
-          xAxisKey = _this$props.xAxisKey,
-          yAxisKey = _this$props.yAxisKey,
-          configs = _this$props.configs;
-
-
-      if (dataSets === undefined) {
-        return;
-      }
-
-      var dotCanvasSize = configs.plotStyling.dotSize > 0 ? configs.plotStyling.dotSize : _this.dotCanvasSize;
-
-      ctx.clearRect(0, 0, _this.canvasW, _this.canvasH);
-      ctx.beginPath();
-
-      dataSets.forEach(function (dataSet, i) {
-        if (dataSet.length > 0) {
-          dataSet.forEach(function (dataObj) {
-            var domY = void 0,
-                domX = (0, _PlottingUtils.toDomXCoord_Linear)(_this.canvasW, visibleXRange[0], visibleXRange[1], dataObj[xAxisKey]) - dotCanvasSize / 2;
-
-            var circle = _this.getCircle(dataPointColors[i], dotCanvasSize);
-
-            domY = (0, _PlottingUtils.toDomYCoord_Linear)(_this.canvasH, visibleYRange[0], visibleYRange[1], dataObj[yAxisKey]) - dotCanvasSize / 2;
-
-            ctx.drawImage(circle, domX, domY);
-          });
-        }
-      });
-    };
-
     _this.canvasW = _this.props.width;
     _this.canvasH = _this.props.height;
     // {color: canvas}
@@ -94,6 +58,46 @@ var ScatterPlot = function (_Component) {
       return !(0, _lodash2.default)(this.props, nextProps) || this.state !== nextState;
     }
   }, {
+    key: "drawScatterPlot",
+    value: function drawScatterPlot(ctx) {
+      var _props = this.props,
+          dataSets = _props.dataSets,
+          dataPointColors = _props.dataPointColors,
+          visibleXRange = _props.visibleXRange,
+          visibleYRange = _props.visibleYRange,
+          xAxisKey = _props.xAxisKey,
+          yAxisKey = _props.yAxisKey,
+          configs = _props.configs;
+
+
+      if (dataSets === undefined) {
+        return;
+      }
+
+      var dotCanvasSize = configs.plotStyling.dotSize > 0 ? configs.plotStyling.dotSize : this.dotCanvasSize;
+
+      ctx.clearRect(0, 0, this.canvasW, this.canvasH);
+
+      for (var i = 0; i < dataSets.length; i++) {
+        var curDataSet = dataSets[i];
+        if (curDataSet.length > 0) {
+          for (var j = 0; j < curDataSet.length; j++) {
+            var curDataObj = curDataSet[j];
+            if (curDataObj[xAxisKey] >= visibleXRange[0] && curDataObj[xAxisKey] <= visibleXRange[1]) {
+              var domY = void 0,
+                  domX = Math.floor((0, _PlottingUtils.toDomXCoord_Linear)(this.canvasW, visibleXRange[0], visibleXRange[1], curDataObj[xAxisKey]) - dotCanvasSize / 2);
+
+              var circle = this.getCircle(dataPointColors[i], dotCanvasSize);
+
+              domY = Math.floor((0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, visibleYRange[0], visibleYRange[1], curDataObj[yAxisKey]) - dotCanvasSize / 2);
+
+              ctx.drawImage(circle, domX, domY);
+            }
+          }
+        }
+      }
+    }
+  }, {
     key: "getCircle",
     value: function getCircle(color) {
       var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 6;
@@ -109,7 +113,9 @@ var ScatterPlot = function (_Component) {
         ctx.fillStyle = color;
         ctx.fill();
         cachedDataPointColorCanvas = canvas;
+        this.dataPointColorCanvasCache[color + size] = canvas;
       }
+
       return cachedDataPointColorCanvas;
     }
   }, {

@@ -77,43 +77,11 @@ var ScatterPlotBundle = function (_Component) {
           isDynamicYAxis = _configs$axis.isDynamicYAxis,
           yAxisPadding = _configs$axis.yAxisPadding;
 
-      var dotSize = configs.plotStyling.dotSize;
       var visibleYRange = [Number.MAX_VALUE, Number.MIN_VALUE];
       var visibleXRange = isDynamicXAxis ? this.props.visibleXRange : [Number.MAX_VALUE, Number.MIN_VALUE];
       var visibleYRangeDistance = 0;
-      var filteredDataSets = [];
-      var plotWidth = 1200;
       var yAxisPanelWidth = 40;
-
-      dataSets.forEach(function (dataSet, i) {
-        filteredDataSets[i] = dataSet.filter(function (dataObj) {
-          if (!isDynamicXAxis) {
-            if (dataObj[xAxisKey] < visibleXRange[0]) {
-              visibleXRange[0] = dataObj[xAxisKey];
-            } else if (dataObj[xAxisKey] > visibleXRange[1]) {
-              visibleXRange[1] = dataObj[xAxisKey];
-            }
-          }
-
-          if (isDynamicYAxis) {
-            if (dataObj[xAxisKey] >= visibleXRange[0] && dataObj[xAxisKey] <= visibleXRange[1]) {
-              if (dataObj[yAxisKey] < visibleYRange[0]) {
-                visibleYRange[0] = dataObj[yAxisKey];
-              } else if (dataObj[yAxisKey] > visibleYRange[1]) {
-                visibleYRange[1] = dataObj[yAxisKey];
-              }
-            }
-          } else {
-            if (dataObj[yAxisKey] < visibleYRange[0]) {
-              visibleYRange[0] = dataObj[yAxisKey];
-            } else if (dataObj[yAxisKey] > visibleYRange[1]) {
-              visibleYRange[1] = dataObj[yAxisKey];
-            }
-          }
-
-          return dataObj[xAxisKey] >= visibleXRange[0] && dataObj[xAxisKey] <= visibleXRange[1];
-        });
-      });
+      var plotWidth = width - yAxisPanelWidth;
 
       visibleYRangeDistance = round5(visibleYRange[1] - visibleYRange[0]);
       visibleYRange[0] -= yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1; // TODO: figure out y padding
@@ -164,11 +132,11 @@ var ScatterPlotBundle = function (_Component) {
                   "div",
                   { style: { position: "absolute" } },
                   _react2.default.createElement(_ScatterPlot2.default, {
-                    dataSets: filteredDataSets,
+                    dataSets: dataSets,
                     dataPointColors: dataPointColors,
                     visibleXRange: visibleXRange,
                     visibleYRange: visibleYRange,
-                    width: width,
+                    width: plotWidth,
                     height: height,
                     xAxisKey: xAxisKey,
                     yAxisKey: yAxisKey,
@@ -182,11 +150,11 @@ var ScatterPlotBundle = function (_Component) {
       }
 
       return _react2.default.createElement(_ScatterPlot2.default, {
-        dataSets: filteredDataSets,
+        dataSets: dataSets,
         dataPointColors: dataPointColors,
         visibleXRange: visibleXRange,
         visibleYRange: maxY !== null ? [minY, maxY] : visibleYRange,
-        width: width,
+        width: plotWidth,
         height: height,
         xAxisKey: xAxisKey,
         yAxisKey: yAxisKey,

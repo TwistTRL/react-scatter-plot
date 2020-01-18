@@ -29,28 +29,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DragOverlay = function (_PureComponent) {
   _inherits(DragOverlay, _PureComponent);
 
-  function DragOverlay() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
+  function DragOverlay(props) {
     _classCallCheck(this, DragOverlay);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    var _this = _possibleConstructorReturn(this, (DragOverlay.__proto__ || Object.getPrototypeOf(DragOverlay)).call(this, props));
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = DragOverlay.__proto__ || Object.getPrototypeOf(DragOverlay)).call.apply(_ref, [this].concat(args))), _this), _this.handleMouseMove = function (ev) {
-      ev.stopPropagation();
-      var mouseMoveHandler = _this.props.mouseMoveHandler;
-
-      mouseMoveHandler(ev);
-    }, _this.handleMouseUp = function (ev) {
-      ev.stopPropagation();
-      var mouseUpHandler = _this.props.mouseUpHandler;
-
-      mouseUpHandler(ev);
-    }, _temp), _possibleConstructorReturn(_this, _ret);
+    _this.handleMouseMove = _this.handleMouseMove.bind(_this);
+    _this.handleMouseUp = _this.handleMouseUp.bind(_this);
+    return _this;
   }
 
   _createClass(DragOverlay, [{
@@ -71,6 +57,22 @@ var DragOverlay = function (_PureComponent) {
     value: function componentWillUnmount() {
       document.removeEventListener("mousemove", this.handleMouseMove, true);
       document.removeEventListener("mouseup", this.handleMouseUp, true);
+    }
+  }, {
+    key: "handleMouseMove",
+    value: function handleMouseMove(ev) {
+      ev.stopPropagation();
+      var mouseMoveHandler = this.props.mouseMoveHandler;
+
+      mouseMoveHandler(ev);
+    }
+  }, {
+    key: "handleMouseUp",
+    value: function handleMouseUp(ev) {
+      ev.stopPropagation();
+      var mouseUpHandler = this.props.mouseUpHandler;
+
+      mouseUpHandler(ev);
     }
   }]);
 

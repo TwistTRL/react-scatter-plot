@@ -70,20 +70,6 @@ var PlotInteractionBoxProvider = function (_Component) {
       }));
     };
 
-    _this.handlePanning = function (panningPositions) {
-      _this.setState(_extends({}, _this.state, { panningPositions: panningPositions }));
-      if (_this.props.handlePan) {
-        _this.props.handlePan(panningPositions);
-      }
-    };
-
-    _this.handlePanned = function (pannedPositions) {
-      _this.setState(_extends({}, _this.state, { pannedPositions: pannedPositions, panningPositions: null }));
-      if (_this.props.handlePanned) {
-        _this.props.handlePanned(pannedPositions);
-      }
-    };
-
     _this.state = {
       hoveringPosition: null,
       clickPosition: null,
@@ -93,6 +79,8 @@ var PlotInteractionBoxProvider = function (_Component) {
       panningPositions: null,
       pannedPositions: null
     };
+    _this.handlePanning = _this.handlePanning.bind(_this);
+    _this.handlePanned = _this.handlePanned.bind(_this);
     return _this;
   }
 
@@ -121,6 +109,22 @@ var PlotInteractionBoxProvider = function (_Component) {
         },
         render(this.state)
       );
+    }
+  }, {
+    key: "handlePanning",
+    value: function handlePanning(panningPositions) {
+      this.setState(_extends({}, this.state, { panningPositions: panningPositions }));
+      if (this.props.handlePan) {
+        this.props.handlePan(panningPositions);
+      }
+    }
+  }, {
+    key: "handlePanned",
+    value: function handlePanned(pannedPositions) {
+      this.setState(_extends({}, this.state, { pannedPositions: pannedPositions, panningPositions: null }));
+      if (this.props.handlePanned) {
+        this.props.handlePanned(pannedPositions);
+      }
     }
   }]);
 
