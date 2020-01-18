@@ -47,7 +47,6 @@ class ScatterPlot extends Component {
         : this.dotCanvasSize;
 
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
-    ctx.beginPath();
 
     for (let i = 0; i < dataSets.length; i++) {
       let curDataSet = dataSets[i];
@@ -59,25 +58,27 @@ class ScatterPlot extends Component {
             curDataObj[xAxisKey] <= visibleXRange[1]
           ) {
             let domY,
-              domX =
+              domX = Math.floor(
                 toDomXCoord_Linear(
                   this.canvasW,
                   visibleXRange[0],
                   visibleXRange[1],
                   curDataObj[xAxisKey]
                 ) -
-                dotCanvasSize / 2;
+                  dotCanvasSize / 2
+              );
 
             let circle = this.getCircle(dataPointColors[i], dotCanvasSize);
 
-            domY =
+            domY = Math.floor(
               toDomYCoord_Linear(
                 this.canvasH,
                 visibleYRange[0],
                 visibleYRange[1],
                 curDataObj[yAxisKey]
               ) -
-              dotCanvasSize / 2;
+                dotCanvasSize / 2
+            );
 
             ctx.drawImage(circle, domX, domY);
           }
@@ -100,7 +101,9 @@ class ScatterPlot extends Component {
       ctx.fillStyle = color;
       ctx.fill();
       cachedDataPointColorCanvas = canvas;
+      this.dataPointColorCanvasCache[color + size] = canvas;
     }
+
     return cachedDataPointColorCanvas;
   }
 

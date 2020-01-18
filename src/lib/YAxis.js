@@ -17,42 +17,64 @@ class YAxis extends Component {
     this.canvasH = this.props.canvasH;
     this.minY = this.props.minY;
     this.maxY = this.props.maxY;
+    this.yAxisSkipInterval = 50;
   }
 
   componentDidMount() {
+    let yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
+    this.generateYAxisLabels(this.maxY * 10);
     this.yAxisCanvas = this.refs.yAxisCanvas;
     this.yAxisCtx = this.yAxisCanvas.getContext("2d");
-    this.drawYAxis(this.yAxisCtx);
+    this.drawYAxis(
+      this.yAxisCtx,
+      this.getYAxisLabelSkipInterval(
+        this.minY,
+        this.maxY,
+        this.canvasH,
+        yAxisLabelPadding,
+        20
+      )
+    );
   }
 
   componentDidUpdate() {
+    let yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
     this.minY = this.props.minY;
     this.maxY = this.props.maxY;
-    this.drawYAxis(this.yAxisCtx);
+    this.drawYAxis(
+      this.yAxisCtx,
+      this.getYAxisLabelSkipInterval(
+        this.minY,
+        this.maxY,
+        this.canvasH,
+        yAxisLabelPadding,
+        20
+      )
+    );
   }
 
-  toDomYCoord_Linear = (height, minY, maxY, dataY) => {
+  toDomYCoord_Linear(height, minY, maxY, dataY) {
     return height - (dataY - minY) / ((maxY - minY) / height);
-  };
+  }
 
-  generateYAxisLabels(minY, maxY, height, labelPadding = 20, labelTextHeight) {
-    this.yAxisLabels = [];
+  getYAxisLabelSkipInterval(
+    minY,
+    maxY,
+    height,
+    labelPadding = 20,
+    labelTextHeight
+  ) {
     let numOfLabelsCanFit = Math.round(
       height / (labelTextHeight + labelPadding)
     );
-    let yAxisSpan = round5(maxY - minY);
-    let yAxisLabelInterval = round5(yAxisSpan / numOfLabelsCanFit);
 
-    // negative labels
-    for (
-      let curYAxisLabel = -yAxisLabelInterval;
-      curYAxisLabel > round5(minY);
-      curYAxisLabel -= yAxisLabelInterval
-    ) {
-      this.yAxisLabels.push(curYAxisLabel);
-    }
+    return round5((maxY - minY) / numOfLabelsCanFit);
+  }
 
-    // positive labels
+  generateYAxisLabels(maxY) {
+    this.yAxisLabels = [];
+    let yAxisLabelInterval = 1;
+
     for (
       let curYAxisLabel = 0;
       curYAxisLabel < round5(maxY);
@@ -62,17 +84,9 @@ class YAxis extends Component {
     }
   }
 
-  drawYAxis = ctx => {
+  drawYAxis(ctx, yAxisLabelInterval) {
     let textXPadding = 10;
     let yAxisHorizontalLineWidth = 5;
-    let yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
-    this.generateYAxisLabels(
-      this.minY,
-      this.maxY,
-      this.canvasH,
-      yAxisLabelPadding,
-      20
-    );
 
     // clear canvas
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
@@ -93,21 +107,39 @@ class YAxis extends Component {
     ctx.lineTo(this.canvasW, this.canvasH - 5);
     ctx.stroke();
 
-    // draw the labels and horizontal lines
+    // draw the positive labels and horizontal lines
     for (let i = 0; i < this.yAxisLabels.length; i++) {
-      let domY = this.toDomYCoord_Linear(
-        this.canvasH,
-        this.minY,
-        this.maxY,
-        this.yAxisLabels[i]
-      );
-      ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
-      ctx.lineTo(this.canvasW, domY);
-      ctx.fillText(this.yAxisLabels[i], this.canvasW - textXPadding, domY);
+      if (i % yAxisLabelInterval === 0) {
+        let domY = Math.floor(this.toDomYCoord_Linear(
+          this.canvasH,
+          this.minY,
+          this.maxY,
+          this.yAxisLabels[i]
+        ));
+        ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
+        ctx.lineTo(this.canvasW, domY);
+        ctx.fillText(this.yAxisLabels[i], this.canvasW - textXPadding, domY);
+      }
+    }
+
+    if (this.minY < 0) {
+      for (let i = 0; i < this.yAxisLabels.length; i++) {
+        if (i % yAxisLabelInterval === 0 && -this.yAxisLabels[i] >= this.minY) {
+          let domY = Math.floor(this.toDomYCoord_Linear(
+            this.canvasH,
+            this.minY,
+            this.maxY,
+            -this.yAxisLabels[i]
+          ));
+          ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
+          ctx.lineTo(this.canvasW, domY);
+          ctx.fillText(-this.yAxisLabels[i], this.canvasW - textXPadding, domY);
+        }
+      }
     }
 
     ctx.stroke();
-  };
+  }
 
   roundToNearestTenth(n) {
     return (parseInt(n / 10, 10) + 1) * 10;

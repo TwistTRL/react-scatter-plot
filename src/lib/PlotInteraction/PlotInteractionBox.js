@@ -65,6 +65,7 @@ class PlotInteractionBox extends PureComponent {
     this.initialMouseDownPosition = null;
     this.prevClickTimeStamp = null;
     this.handleMouseMove_Panning = this.handleMouseMove_Panning.bind(this);
+    this.handleMouseUp_Panning = this.handleMouseUp_Panning.bind(this);
   }
 
   render() {
@@ -263,13 +264,13 @@ class PlotInteractionBox extends PureComponent {
     panningHandler({ start: initialMouseDownPosition, end: myEV });
   }
 
-  handleMouseUp_Panning = ev => {
+  handleMouseUp_Panning(ev) {
     let { pannedHandler } = this.props;
     let { initialMouseDownPosition } = this;
     let myEV = this.getCustomEventObject(ev);
     pannedHandler({ start: initialMouseDownPosition, end: myEV });
     this.transition(ACTION_MOUSEUP);
-  };
+  }
 }
 
 export default PlotInteractionBox;

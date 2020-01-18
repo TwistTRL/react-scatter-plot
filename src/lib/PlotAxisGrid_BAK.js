@@ -17,40 +17,74 @@ class PlotAxisGrid extends Component {
     this.canvasH = this.props.canvasH;
     this.minY = this.props.minY;
     this.maxY = this.props.maxY;
+    console.log(this.canvasW);
   }
 
   componentDidMount() {
+    let yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
     this.plotAxisGridCanvas = this.refs.plotAxisGridCanvas;
     this.plotAxisGridCtx = this.plotAxisGridCanvas.getContext("2d");
-    this.drawYAxisGrid(this.plotAxisGridCtx);
+
+    let canvas = document.createElement("canvas");
+    canvas.width = this.canvasW;
+    canvas.height = 1;
+    let ctx = canvas.getContext("2d");
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, this.canvasW);
+    ctx.stroke();
+    this.cachedGridLine = canvas;
+
+    this.generateYAxisLabels(this.maxY * 1.5);
+    this.drawYAxisGrid(
+      this.plotAxisGridCtx,
+      this.getYAxisSkipInterval(
+        this.minY,
+        this.maxY,
+        this.canvasH,
+        yAxisLabelPadding,
+        20
+      )
+    );
   }
 
   componentDidUpdate() {
+    let yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
     this.minY = this.props.minY;
     this.maxY = this.props.maxY;
-    this.drawYAxisGrid(this.plotAxisGridCtx);
+    this.drawYAxisGrid(
+      this.plotAxisGridCtx,
+      this.getYAxisSkipInterval(
+        this.minY,
+        this.maxY,
+        this.canvasH,
+        yAxisLabelPadding,
+        20
+      )
+    );
   }
 
-  generateYAxisIntervals(minY, maxY, height, labelPadding, labelTextHeight) {
-    this.yAxisIntervals = [];
+  getYAxisSkipInterval(minY, maxY, height, labelPadding = 20, labelTextHeight) {
     let numOfLabelsCanFit = Math.round(
       height / (labelTextHeight + labelPadding)
     );
-    let yAxisSpan = round5(maxY - minY);
-    let yAxisLabelInterval = round5(yAxisSpan / numOfLabelsCanFit);
+
+    return round5((maxY - minY) / numOfLabelsCanFit);
+  }
+
+  generateYAxisLabels(maxY) {
+    this.yAxisLabels = [];
+    let yAxisLabelInterval = 1;
 
     for (
       let curYAxisLabel = 0;
       curYAxisLabel < round5(maxY);
       curYAxisLabel += yAxisLabelInterval
     ) {
-      this.yAxisIntervals.push(curYAxisLabel);
+      this.yAxisLabels.push(curYAxisLabel);
     }
   }
 
-  drawYAxisGrid(ctx) {
-    this.generateYAxisIntervals(this.minY, this.maxY, this.canvasH, 20, 20);
-
+  drawYAxisGrid(ctx, yAxisSkipInterval) {
     // clear canvas
     ctx.clearRect(0, 0, this.canvasW, this.canvasH);
     ctx.beginPath();
@@ -58,31 +92,36 @@ class PlotAxisGrid extends Component {
     ctx.strokeStyle = "rgba(211,211,211, 0.6)";
     ctx.lineWidth = 1;
 
-    for (let i = 0; i < this.yAxisIntervals.length; i++) {
-      let domY = toDomYCoord_Linear(
-        this.canvasH,
-        this.minY,
-        this.maxY,
-        this.yAxisIntervals[i]
-      );
-      ctx.moveTo(0, domY);
-      ctx.lineTo(this.canvasW, domY);
-    }
-    ctx.stroke();
-
-    if (this.minY < 0) {
-      for (let i = 0; i < this.yAxisIntervals.length; i++) {
+    for (let i = 0; i < this.yAxisLabels.length; i++) {
+      if (i % yAxisSkipInterval === 0) {
         let domY = toDomYCoord_Linear(
           this.canvasH,
           this.minY,
           this.maxY,
-          -this.yAxisIntervals[i]
+          this.yAxisLabels[i]
         );
         ctx.moveTo(0, domY);
         ctx.lineTo(this.canvasW, domY);
+        // ctx.drawImage(this.cachedGridLine, 0, domY);
       }
-      ctx.stroke();
     }
+
+    if (this.minY < 0) {
+      for (let i = 0; i < this.yAxisLabels.length; i++) {
+        if (i % yAxisSkipInterval === 0) {
+          let domY = toDomYCoord_Linear(
+            this.canvasH,
+            this.minY,
+            this.maxY,
+            -this.yAxisLabels[i]
+          );
+          ctx.moveTo(0, domY);
+          ctx.lineTo(this.canvasW, domY);
+        }
+      }
+    }
+
+    ctx.stroke();
   }
 
   roundToNearestTenth(n) {

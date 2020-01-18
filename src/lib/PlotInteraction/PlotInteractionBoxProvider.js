@@ -15,6 +15,8 @@ class PlotInteractionBoxProvider extends Component {
       panningPositions: null,
       pannedPositions: null
     };
+    this.handlePanning = this.handlePanning.bind(this);
+    this.handlePanned = this.handlePanned.bind(this);
   }
 
   render() {
@@ -78,19 +80,19 @@ class PlotInteractionBoxProvider extends Component {
     });
   };
 
-  handlePanning = panningPositions => {
+  handlePanning(panningPositions) {
     this.setState({ ...this.state, panningPositions });
     if (this.props.handlePan) {
       this.props.handlePan(panningPositions);
     }
-  };
+  }
 
-  handlePanned = pannedPositions => {
+  handlePanned(pannedPositions) {
     this.setState({ ...this.state, pannedPositions, panningPositions: null });
     if (this.props.handlePanned) {
-      this.props.handlePanned(pannedPositions)
+      this.props.handlePanned(pannedPositions);
     }
-  };
+  }
 }
 
 export default PlotInteractionBoxProvider;

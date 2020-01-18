@@ -1,35 +1,34 @@
-import {PureComponent} from "react";
-import {fromDomXCoord_Linear} from "plot-utils";
+import { PureComponent } from "react";
+import { fromDomXCoord_Linear } from "plot-utils";
 
 class PlotPanningController extends PureComponent {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.lastEvent = null;
     this.snapshot = {};
   }
-  
-  render(){
+
+  render() {
     return null;
   }
-  
-  componentDidMount(){
+
+  componentDidMount() {
     this.pan();
   }
-  
-  componentDidUpdate(){
+
+  componentDidUpdate() {
     this.pan();
   }
-  
+
   pan() {
-    let { panningPositions,panHandler,
-          minX,maxX,width} = this.props;
-    let {snapshot} = this;
+    let { panningPositions, panHandler, minX, maxX, width } = this.props;
+    let { snapshot } = this;
     // Do not process stale panningPositions
-    if (panningPositions===this.lastEvent) {
+    if (panningPositions === this.lastEvent) {
       return;
     }
     // Panning stops
-    if (panningPositions===null) {
+    if (panningPositions === null) {
       this.lastEvent = null;
       return;
     }
@@ -39,11 +38,21 @@ class PlotPanningController extends PureComponent {
       snapshot.minX = minX;
       snapshot.maxX = maxX;
       snapshot.width = width;
-      snapshot.initialDataX = fromDomXCoord_Linear(width,minX,maxX,panningPositions.start.domX);
+      snapshot.initialDataX = fromDomXCoord_Linear(
+        width,
+        minX,
+        maxX,
+        panningPositions.start.domX
+      );
     }
-    let curDataX = fromDomXCoord_Linear(snapshot.width,snapshot.minX,snapshot.maxX,panningPositions.end.domX);
+    let curDataX = fromDomXCoord_Linear(
+      snapshot.width,
+      snapshot.minX,
+      snapshot.maxX,
+      panningPositions.end.domX
+    );
     let deltaX = curDataX - snapshot.initialDataX;
-    panHandler(snapshot.minX-deltaX, snapshot.maxX-deltaX);
+    panHandler(snapshot.minX - deltaX, snapshot.maxX - deltaX);
     this.lastEvent = panningPositions;
   }
 }

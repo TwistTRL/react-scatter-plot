@@ -23,16 +23,18 @@ class App extends PureComponent {
     super(props);
 
     this.state = {
-      visibleXRange: [1513058000000, 1513695600000],
+      visibleXRange: [1383058000000, 1513695600000],
       currentOverlay: null,
       dataSets: [],
       dataPointColors: ["#d50000", "#ff6d00", "#546e7a"],
-      minY: 0,
+      minY: -200,
       maxY: 200
     };
     this.prevMaxY = 200;
     this.prevPanDist = 0;
     this.dataSetCount = 4;
+    this.handlePan = this.handlePan.bind(this);
+    this.handlePanned = this.handlePan.bind(this);
   }
 
   componentDidMount() {
@@ -46,7 +48,7 @@ class App extends PureComponent {
     for (let i = 0; i < this.dataSetCount; i++) {
       dataSets[i] = [
         ...this.generateDummyData(
-          [1482858000000, 1513695600000],
+          [1182858000000, 1513695600000],
           [1, this.state.maxY],
           100000000
         )
@@ -74,9 +76,10 @@ class App extends PureComponent {
     return dummyData;
   }
 
-  handlePan = e => {
+  handlePan(e) {
     let newMaxY =
       this.state.maxY + (e.end.domY - e.start.domY - this.prevPanDist);
+
     if (newMaxY > 150) {
       this.setState({
         ...this.state,
@@ -84,11 +87,11 @@ class App extends PureComponent {
       });
       this.prevPanDist = e.end.domY - e.start.domY;
     }
-  };
+  }
 
-  handlePanned = e => {
+  handlePanned() {
     this.prevPanDist = 0;
-  };
+  }
 
   render() {
     let { dataSets, visibleXRange, dataPointColors, minY, maxY } = this.state;
@@ -109,7 +112,7 @@ class App extends PureComponent {
         <div style={{ position: "absolute", cursor: "ns-resize" }}>
           <PlotInteractionBoxProvider
             width={40}
-            height={400}
+            height={1000}
             handlePan={this.handlePan}
             handlePanned={this.handlePanned}
             render={() => {}}
@@ -117,11 +120,11 @@ class App extends PureComponent {
         </div>
         <ScatterPlotBundle
           dataSets={dataSets}
-          visibleXRange={[...visibleXRange]}
+          visibleXRange={visibleXRange}
           minY={minY}
           maxY={maxY}
-          width={1200}
-          height={400}
+          width={1500}
+          height={1000}
           xAxisKey={"time"}
           yAxisKey={"value"}
           dataPointColors={dataPointColors}
