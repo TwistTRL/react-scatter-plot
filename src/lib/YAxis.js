@@ -18,6 +18,7 @@ class YAxis extends Component {
     this.minY = this.props.minY;
     this.maxY = this.props.maxY;
     this.yAxisSkipInterval = 50;
+    this.yAxisLabelTextCanvasCache = {};
   }
 
   componentDidMount() {
@@ -25,6 +26,7 @@ class YAxis extends Component {
     this.generateYAxisLabels(this.maxY * 10);
     this.yAxisCanvas = this.refs.yAxisCanvas;
     this.yAxisCtx = this.yAxisCanvas.getContext("2d");
+    this.setUpCtx(this.yAxisCtx);
     this.drawYAxis(
       this.yAxisCtx,
       this.getYAxisLabelSkipInterval(
@@ -84,15 +86,7 @@ class YAxis extends Component {
     }
   }
 
-  // TODO: CACHE TEXT CANVAS
-  drawYAxis(ctx, yAxisLabelInterval) {
-    let textXPadding = 10;
-    let yAxisHorizontalLineWidth = 5;
-
-    // clear canvas
-    ctx.clearRect(0, 0, this.canvasW, this.canvasH);
-    ctx.beginPath();
-
+  setUpCtx(ctx) {
     // y-axis vertical line styling
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2.5;
@@ -102,11 +96,22 @@ class YAxis extends Component {
     ctx.textBaseline = "middle";
     ctx.textAlign = "right";
     ctx.fillStyle = "gray";
+  }
+
+  // TODO: CACHE TEXT CANVAS
+  drawYAxis(ctx, yAxisLabelInterval) {
+    let textXPadding = 10;
+    let yAxisHorizontalLineWidth = 5;
+
+    // clear canvas
+    ctx.clearRect(0, 0, this.canvasW, this.canvasH);
+    ctx.beginPath();
 
     // draw the y-axis vertical line
     ctx.moveTo(this.canvasW, 5);
     ctx.lineTo(this.canvasW, this.canvasH - 5);
-    ctx.stroke();
+
+    // console.log(this.yAxisLabelTextCanvasCache)
 
     // draw the positive labels and horizontal lines
     for (
@@ -125,7 +130,11 @@ class YAxis extends Component {
         );
         ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
         ctx.lineTo(this.canvasW, domY);
-        ctx.fillText(this.yAxisLabels[i], this.canvasW - textXPadding, domY);
+        ctx.drawImage(
+          this.getTextCanvas(ctx, this.yAxisLabels[i]),
+          0,
+          domY - 5
+        );
       }
     }
 
@@ -146,12 +155,37 @@ class YAxis extends Component {
           );
           ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
           ctx.lineTo(this.canvasW, domY);
-          ctx.fillText(-this.yAxisLabels[i], this.canvasW - textXPadding, domY);
+          ctx.drawImage(
+            this.getTextCanvas(ctx, -this.yAxisLabels[i]),
+            0,
+            domY - 5
+          );
         }
       }
     }
 
     ctx.stroke();
+  }
+
+  getTextCanvas(yAxisCanvasCtx, txt) {
+    let cachedLabelTextCanvas = this.yAxisLabelTextCanvasCache[txt];
+
+    if (cachedLabelTextCanvas === undefined) {
+      let canvas = document.createElement("canvas");
+      canvas.width = this.canvasW;
+      canvas.height = 10;
+      // text styling
+      let ctx = canvas.getContext("2d");
+      ctx.font = "13px Arial";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "right";
+      ctx.fillStyle = "red";
+      ctx.fillText(txt, 30, 5);
+      cachedLabelTextCanvas = canvas;
+      this.yAxisLabelTextCanvasCache[txt] = canvas;
+    }
+
+    return cachedLabelTextCanvas;
   }
 
   roundToNearestTenth(n) {
