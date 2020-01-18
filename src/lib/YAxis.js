@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import { toDomYCoord_Linear, toDomXCoord_Linear } from "./PlottingUtils";
-import isEqual from "lodash.isequal";
+import React, { PureComponent } from "react";
 
 function round5(x) {
   return Math.round(Math.ceil(x / 5) * 5);
 }
 
-function round2(x) {
-  return Math.round(Math.ceil(x / 2) * 2);
-}
+const YAXIS_FONT_STYLE = {
+  size: 12,
+  color: "black",
+  fontFamily: "MuseoSans, sans-serif"
+};
 
-class YAxis extends Component {
+class YAxis extends PureComponent {
   constructor(props) {
     super(props);
     this.canvasW = this.props.canvasW;
@@ -91,16 +91,16 @@ class YAxis extends Component {
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2.5;
     // text styling
-    ctx.font = "500 13px MuseoSans, sans-serif";
+    ctx.font =
+      "500 " + YAXIS_FONT_STYLE.size + "px " + YAXIS_FONT_STYLE.fontFamily;
     ctx.lineWidth = 0.6;
     ctx.textBaseline = "middle";
     ctx.textAlign = "right";
     ctx.fillStyle = "gray";
+    this.textHeight = ctx.measureText("M").width;
   }
 
-  // TODO: CACHE TEXT CANVAS
   drawYAxis(ctx, yAxisLabelInterval) {
-    let textXPadding = 10;
     let yAxisHorizontalLineWidth = 5;
 
     // clear canvas
@@ -110,8 +110,6 @@ class YAxis extends Component {
     // draw the y-axis vertical line
     ctx.moveTo(this.canvasW, 5);
     ctx.lineTo(this.canvasW, this.canvasH - 5);
-
-    // console.log(this.yAxisLabelTextCanvasCache)
 
     // draw the positive labels and horizontal lines
     for (
@@ -133,7 +131,7 @@ class YAxis extends Component {
         ctx.drawImage(
           this.getTextCanvas(ctx, this.yAxisLabels[i]),
           0,
-          domY - 5
+          domY - this.textHeight / 2
         );
       }
     }
@@ -158,7 +156,7 @@ class YAxis extends Component {
           ctx.drawImage(
             this.getTextCanvas(ctx, -this.yAxisLabels[i]),
             0,
-            domY - 5
+            domY - this.textHeight / 2
           );
         }
       }
@@ -172,24 +170,21 @@ class YAxis extends Component {
 
     if (cachedLabelTextCanvas === undefined) {
       let canvas = document.createElement("canvas");
-      canvas.width = this.canvasW;
-      canvas.height = 10;
-      // text styling
       let ctx = canvas.getContext("2d");
-      ctx.font = "13px Arial";
-      ctx.textBaseline = "middle";
+      canvas.width = this.canvasW;
+      canvas.height = this.textHeight * 2;
+
+      // text styling
+      ctx.font = YAXIS_FONT_STYLE.size + "px " + YAXIS_FONT_STYLE.fontFamily;
+      ctx.textBaseline = "top";
       ctx.textAlign = "right";
-      ctx.fillStyle = "red";
-      ctx.fillText(txt, 30, 5);
+      ctx.fillStyle = YAXIS_FONT_STYLE.color;
+      ctx.fillText(txt, 30, 0);
       cachedLabelTextCanvas = canvas;
       this.yAxisLabelTextCanvasCache[txt] = canvas;
     }
 
     return cachedLabelTextCanvas;
-  }
-
-  roundToNearestTenth(n) {
-    return (parseInt(n / 10, 10) + 1) * 10;
   }
 
   render() {
