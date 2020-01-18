@@ -22,8 +22,8 @@ class YAxis extends PureComponent {
   }
 
   componentDidMount() {
-    let yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
-    this.generateYAxisLabels(this.maxY * 10);
+    this.yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
+    this.yAxisLabels = this.generateYAxisLabels(this.maxY * 10);
     this.yAxisCanvas = this.refs.yAxisCanvas;
     this.yAxisCtx = this.yAxisCanvas.getContext("2d");
     this.setUpCtx(this.yAxisCtx);
@@ -33,14 +33,14 @@ class YAxis extends PureComponent {
         this.minY,
         this.maxY,
         this.canvasH,
-        yAxisLabelPadding,
+        this.yAxisLabelPadding,
         20
       )
     );
   }
 
   componentDidUpdate() {
-    let yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
+    this.yAxisLabelPadding = this.props.configs.axis.yAxisLabelPadding;
     this.minY = this.props.minY;
     this.maxY = this.props.maxY;
     this.drawYAxis(
@@ -49,7 +49,7 @@ class YAxis extends PureComponent {
         this.minY,
         this.maxY,
         this.canvasH,
-        yAxisLabelPadding,
+        this.yAxisLabelPadding,
         20
       )
     );
@@ -74,7 +74,7 @@ class YAxis extends PureComponent {
   }
 
   generateYAxisLabels(maxY) {
-    this.yAxisLabels = [];
+    let yAxisLabels = [];
     let yAxisLabelInterval = 1;
 
     for (
@@ -82,8 +82,10 @@ class YAxis extends PureComponent {
       curYAxisLabel < round5(maxY);
       curYAxisLabel += yAxisLabelInterval
     ) {
-      this.yAxisLabels.push(curYAxisLabel);
+      yAxisLabels.push(curYAxisLabel);
     }
+
+    return yAxisLabels;
   }
 
   setUpCtx(ctx) {
@@ -117,23 +119,21 @@ class YAxis extends PureComponent {
       i < this.maxY + yAxisLabelInterval;
       i += yAxisLabelInterval
     ) {
-      if (i % yAxisLabelInterval === 0) {
-        let domY = Math.floor(
-          this.toDomYCoord_Linear(
-            this.canvasH,
-            this.minY,
-            this.maxY,
-            this.yAxisLabels[i]
-          )
-        );
-        ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
-        ctx.lineTo(this.canvasW, domY);
-        ctx.drawImage(
-          this.getTextCanvas(ctx, this.yAxisLabels[i]),
-          0,
-          domY - this.textHeight / 2
-        );
-      }
+      let domY = Math.floor(
+        this.toDomYCoord_Linear(
+          this.canvasH,
+          this.minY,
+          this.maxY,
+          this.yAxisLabels[i]
+        )
+      );
+      ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
+      ctx.lineTo(this.canvasW, domY);
+      ctx.drawImage(
+        this.getTextCanvas(ctx, this.yAxisLabels[i]),
+        0,
+        domY - this.textHeight / 2
+      );
     }
 
     if (this.minY < 0) {
@@ -142,23 +142,21 @@ class YAxis extends PureComponent {
         i < this.maxY + yAxisLabelInterval;
         i += yAxisLabelInterval
       ) {
-        if (i % yAxisLabelInterval === 0 && -this.yAxisLabels[i] >= this.minY) {
-          let domY = Math.floor(
-            this.toDomYCoord_Linear(
-              this.canvasH,
-              this.minY,
-              this.maxY,
-              -this.yAxisLabels[i]
-            )
-          );
-          ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
-          ctx.lineTo(this.canvasW, domY);
-          ctx.drawImage(
-            this.getTextCanvas(ctx, -this.yAxisLabels[i]),
-            0,
-            domY - this.textHeight / 2
-          );
-        }
+        let domY = Math.floor(
+          this.toDomYCoord_Linear(
+            this.canvasH,
+            this.minY,
+            this.maxY,
+            -this.yAxisLabels[i]
+          )
+        );
+        ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
+        ctx.lineTo(this.canvasW, domY);
+        ctx.drawImage(
+          this.getTextCanvas(ctx, -this.yAxisLabels[i]),
+          0,
+          domY - this.textHeight / 2
+        );
       }
     }
 
