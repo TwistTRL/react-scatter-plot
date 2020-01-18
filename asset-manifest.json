@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/react-scatter-plot/static/css/main.58754770.chunk.css",
-    "main.js": "/react-scatter-plot/static/js/main.42f07452.chunk.js",
-    "main.js.map": "/react-scatter-plot/static/js/main.42f07452.chunk.js.map",
+    "main.js": "/react-scatter-plot/static/js/main.bed63aaf.chunk.js",
+    "main.js.map": "/react-scatter-plot/static/js/main.bed63aaf.chunk.js.map",
     "runtime-main.js": "/react-scatter-plot/static/js/runtime-main.5ae47f0c.js",
     "runtime-main.js.map": "/react-scatter-plot/static/js/runtime-main.5ae47f0c.js.map",
-    "static/js/2.a2d34406.chunk.js": "/react-scatter-plot/static/js/2.a2d34406.chunk.js",
-    "static/js/2.a2d34406.chunk.js.map": "/react-scatter-plot/static/js/2.a2d34406.chunk.js.map",
+    "static/js/2.5a4e290a.chunk.js": "/react-scatter-plot/static/js/2.5a4e290a.chunk.js",
+    "static/js/2.5a4e290a.chunk.js.map": "/react-scatter-plot/static/js/2.5a4e290a.chunk.js.map",
     "index.html": "/react-scatter-plot/index.html",
-    "precache-manifest.3fe23ed9cd741cfc5a2c47416e5b59f4.js": "/react-scatter-plot/precache-manifest.3fe23ed9cd741cfc5a2c47416e5b59f4.js",
+    "precache-manifest.ef7418532db6d04191fd6e622839b630.js": "/react-scatter-plot/precache-manifest.ef7418532db6d04191fd6e622839b630.js",
     "service-worker.js": "/react-scatter-plot/service-worker.js",
     "static/css/main.58754770.chunk.css.map": "/react-scatter-plot/static/css/main.58754770.chunk.css.map",
-    "static/js/2.a2d34406.chunk.js.LICENSE": "/react-scatter-plot/static/js/2.a2d34406.chunk.js.LICENSE"
+    "static/js/2.5a4e290a.chunk.js.LICENSE": "/react-scatter-plot/static/js/2.5a4e290a.chunk.js.LICENSE"
   },
   "entrypoints": [
     "static/js/runtime-main.5ae47f0c.js",
-    "static/js/2.a2d34406.chunk.js",
+    "static/js/2.5a4e290a.chunk.js",
     "static/css/main.58754770.chunk.css",
-    "static/js/main.42f07452.chunk.js"
+    "static/js/main.bed63aaf.chunk.js"
   ]
 }
