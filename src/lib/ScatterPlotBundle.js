@@ -67,7 +67,7 @@ class ScatterPlotBundle extends Component {
               </td>
               <td className="chart-table-col" style={{ width: plotWidth }}>
                 {" "}
-                {/* <div style={{ position: "absolute" }}>
+                <div style={{ position: "absolute" }}>
                   <PlotAxisGrid
                     canvasW={plotWidth}
                     canvasH={height}
@@ -75,7 +75,7 @@ class ScatterPlotBundle extends Component {
                     maxY={visibleYRange[1]}
                     configs={configs}
                   />
-                </div> */}
+                </div>
                 <div style={{ position: "absolute" }}>
                   <ScatterPlot
                     dataSets={dataSets}

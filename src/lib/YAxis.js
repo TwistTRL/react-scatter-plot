@@ -84,6 +84,7 @@ class YAxis extends Component {
     }
   }
 
+  // TODO: CACHE TEXT CANVAS
   drawYAxis(ctx, yAxisLabelInterval) {
     let textXPadding = 10;
     let yAxisHorizontalLineWidth = 5;
@@ -108,14 +109,20 @@ class YAxis extends Component {
     ctx.stroke();
 
     // draw the positive labels and horizontal lines
-    for (let i = 0; i < this.yAxisLabels.length; i++) {
+    for (
+      let i = 0;
+      i < this.maxY + yAxisLabelInterval;
+      i += yAxisLabelInterval
+    ) {
       if (i % yAxisLabelInterval === 0) {
-        let domY = Math.floor(this.toDomYCoord_Linear(
-          this.canvasH,
-          this.minY,
-          this.maxY,
-          this.yAxisLabels[i]
-        ));
+        let domY = Math.floor(
+          this.toDomYCoord_Linear(
+            this.canvasH,
+            this.minY,
+            this.maxY,
+            this.yAxisLabels[i]
+          )
+        );
         ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
         ctx.lineTo(this.canvasW, domY);
         ctx.fillText(this.yAxisLabels[i], this.canvasW - textXPadding, domY);
@@ -123,14 +130,20 @@ class YAxis extends Component {
     }
 
     if (this.minY < 0) {
-      for (let i = 0; i < this.yAxisLabels.length; i++) {
+      for (
+        let i = 0;
+        i < this.maxY + yAxisLabelInterval;
+        i += yAxisLabelInterval
+      ) {
         if (i % yAxisLabelInterval === 0 && -this.yAxisLabels[i] >= this.minY) {
-          let domY = Math.floor(this.toDomYCoord_Linear(
-            this.canvasH,
-            this.minY,
-            this.maxY,
-            -this.yAxisLabels[i]
-          ));
+          let domY = Math.floor(
+            this.toDomYCoord_Linear(
+              this.canvasH,
+              this.minY,
+              this.maxY,
+              -this.yAxisLabels[i]
+            )
+          );
           ctx.moveTo(this.canvasW - yAxisHorizontalLineWidth, domY);
           ctx.lineTo(this.canvasW, domY);
           ctx.fillText(-this.yAxisLabels[i], this.canvasW - textXPadding, domY);

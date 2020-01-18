@@ -23,12 +23,13 @@ class App extends PureComponent {
     super(props);
 
     this.state = {
-      visibleXRange: [1383058000000, 1513695600000],
+      visibleXRange: [1483058000000, 1513695600000],
       currentOverlay: null,
       dataSets: [],
       dataPointColors: ["#d50000", "#ff6d00", "#546e7a"],
       minY: -200,
-      maxY: 200
+      maxY: 200,
+      height: 600
     };
     this.prevMaxY = 200;
     this.prevPanDist = 0;
@@ -43,13 +44,11 @@ class App extends PureComponent {
     let start = moment(1482858000000);
     let end = moment(1513695600000);
 
-    console.log(Math.ceil(moment.duration(end.diff(start, "days"))));
-
     for (let i = 0; i < this.dataSetCount; i++) {
       dataSets[i] = [
         ...this.generateDummyData(
           [1182858000000, 1513695600000],
-          [1, this.state.maxY],
+          [-this.state.maxY, this.state.maxY],
           100000000
         )
       ];
@@ -61,6 +60,8 @@ class App extends PureComponent {
       dataSets: dataSets,
       dataPointColors: dataPointColors
     });
+
+    console.log(dataSets)
   }
 
   generateDummyData(xRange, yRange, dataFreq) {
@@ -94,7 +95,7 @@ class App extends PureComponent {
   }
 
   render() {
-    let { dataSets, visibleXRange, dataPointColors, minY, maxY } = this.state;
+    let { dataSets, visibleXRange, dataPointColors, minY, maxY, height } = this.state;
     let configs = {
       axis: {
         isDynamicYAxis: true, // dynamic y axis = scale y axis according to current visible dataSets points
@@ -112,7 +113,7 @@ class App extends PureComponent {
         <div style={{ position: "absolute", cursor: "ns-resize" }}>
           <PlotInteractionBoxProvider
             width={40}
-            height={1000}
+            height={height}
             handlePan={this.handlePan}
             handlePanned={this.handlePanned}
             render={() => {}}
@@ -124,7 +125,7 @@ class App extends PureComponent {
           minY={minY}
           maxY={maxY}
           width={1500}
-          height={1000}
+          height={height}
           xAxisKey={"time"}
           yAxisKey={"value"}
           dataPointColors={dataPointColors}
