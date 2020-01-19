@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/react-scatter-plot/precache-manifest.ef7418532db6d04191fd6e622839b630.js"
+  "/react-scatter-plot/precache-manifest.c3a6829f486f8c571698bb43b9f4d7e2.js"
 );
 
 self.addEventListener('message', (event) => {

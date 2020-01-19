@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "46e302cc2ba258fd80650ccdc3e92ad7",
+    "revision": "af3afd0181e2b69738475e310aa9a1cd",
     "url": "/react-scatter-plot/index.html"
   },
   {
-    "revision": "c2bd2cf122f249f1611a",
+    "revision": "62b98ddf2d3653405564",
     "url": "/react-scatter-plot/static/css/main.58754770.chunk.css"
   },
   {
-    "revision": "9f785aa0acee771578cb",
-    "url": "/react-scatter-plot/static/js/2.5a4e290a.chunk.js"
+    "revision": "a583f2959fb5cf5780c4",
+    "url": "/react-scatter-plot/static/js/2.06b84c86.chunk.js"
   },
   {
     "revision": "67935b6d863b3e23bc08cf31dbc40ecc",
-    "url": "/react-scatter-plot/static/js/2.5a4e290a.chunk.js.LICENSE"
+    "url": "/react-scatter-plot/static/js/2.06b84c86.chunk.js.LICENSE"
   },
   {
-    "revision": "c2bd2cf122f249f1611a",
-    "url": "/react-scatter-plot/static/js/main.bed63aaf.chunk.js"
+    "revision": "62b98ddf2d3653405564",
+    "url": "/react-scatter-plot/static/js/main.4087ee31.chunk.js"
   },
   {
     "revision": "11d3797e280b2b2acaf8",
