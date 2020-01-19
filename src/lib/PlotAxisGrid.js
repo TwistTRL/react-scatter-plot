@@ -98,11 +98,11 @@ class PlotAxisGrid extends Component {
       );
       // ctx.moveTo(0, domY);
       // ctx.lineTo(this.canvasW, domY);
-      ctx.drawImage(this.horiGridLineCache, 0, domY);
+      ctx.drawImage(this.horiGridLineCache, 0, domY - 0.5);
     }
 
     if (this.minY < 0) {
-      for (let i = 0; i < this.maxY; i += yAxisIntervals) {
+      for (let i = yAxisIntervals; i < this.maxY; i += yAxisIntervals) {
         let domY = Math.floor(
           toDomYCoord_Linear(
             this.canvasH,
@@ -113,7 +113,7 @@ class PlotAxisGrid extends Component {
         );
         // ctx.moveTo(0, domY);
         // ctx.lineTo(this.canvasW, domY);
-        ctx.drawImage(this.horiGridLineCache, 0, domY);
+        ctx.drawImage(this.horiGridLineCache, 0, domY - 0.5 );
       }
     }
 
@@ -129,9 +129,10 @@ class PlotAxisGrid extends Component {
       canvas.width = this.canvasW;
       canvas.height = 1;
 
-      // text styling
+      ctx.strokeStyle = "gray"
+      ctx.lineWidth = 1
       ctx.moveTo(0, 0);
-      ctx.lineTo(canvas.width, 0);
+      ctx.lineTo(Math.floor(canvas.width), 0);
       ctx.stroke();
       cachedHoriLineCanvas = canvas;
     }

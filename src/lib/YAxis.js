@@ -1,4 +1,5 @@
 import React, { PureComponent } from "react";
+const { createCanvas } = require('canvas')
 
 function round5(x) {
   return Math.round(Math.ceil(x / 5) * 5);
@@ -138,7 +139,7 @@ class YAxis extends PureComponent {
 
     if (this.minY < 0) {
       for (
-        let i = 0;
+        let i = yAxisLabelInterval;
         i < this.maxY + yAxisLabelInterval;
         i += yAxisLabelInterval
       ) {

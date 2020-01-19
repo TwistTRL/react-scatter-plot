@@ -51,7 +51,7 @@ class ScatterPlot extends Component {
     for (let i = 0; i < dataSets.length; i++) {
       let curDataSet = dataSets[i];
       let circle = this.getCircle(dataPointColors[i], dotCanvasSize);
-      
+
       if (curDataSet.length > 0) {
         for (let j = 0; j < curDataSet.length; j++) {
           let curDataObj = curDataSet[j];
@@ -59,6 +59,7 @@ class ScatterPlot extends Component {
             curDataObj[xAxisKey] >= visibleXRange[0] &&
             curDataObj[xAxisKey] <= visibleXRange[1]
           ) {
+            console.log(curDataObj)
             let domY, domX;
 
             domX = Math.floor(
