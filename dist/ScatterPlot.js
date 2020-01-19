@@ -80,15 +80,17 @@ var ScatterPlot = function (_Component) {
 
       for (var i = 0; i < dataSets.length; i++) {
         var curDataSet = dataSets[i];
+        var circle = this.getCircle(dataPointColors[i], dotCanvasSize);
+
         if (curDataSet.length > 0) {
           for (var j = 0; j < curDataSet.length; j++) {
             var curDataObj = curDataSet[j];
             if (curDataObj[xAxisKey] >= visibleXRange[0] && curDataObj[xAxisKey] <= visibleXRange[1]) {
+              console.log(curDataObj);
               var domY = void 0,
-                  domX = Math.floor((0, _PlottingUtils.toDomXCoord_Linear)(this.canvasW, visibleXRange[0], visibleXRange[1], curDataObj[xAxisKey]) - dotCanvasSize / 2);
+                  domX = void 0;
 
-              var circle = this.getCircle(dataPointColors[i], dotCanvasSize);
-
+              domX = Math.floor((0, _PlottingUtils.toDomXCoord_Linear)(this.canvasW, visibleXRange[0], visibleXRange[1], curDataObj[xAxisKey]) - dotCanvasSize / 2);
               domY = Math.floor((0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, visibleYRange[0], visibleYRange[1], curDataObj[yAxisKey]) - dotCanvasSize / 2);
 
               ctx.drawImage(circle, domX, domY);

@@ -28,10 +28,6 @@ function round5(x) {
   return Math.round(Math.ceil(x / 5) * 5);
 }
 
-function round2(x) {
-  return Math.round(Math.ceil(x / 2) * 2);
-}
-
 var PlotAxisGrid = function (_Component) {
   _inherits(PlotAxisGrid, _Component);
 
@@ -44,6 +40,7 @@ var PlotAxisGrid = function (_Component) {
     _this.canvasH = _this.props.canvasH;
     _this.minY = _this.props.minY;
     _this.maxY = _this.props.maxY;
+    _this.horiGridLineCache = undefined;
     return _this;
   }
 
@@ -52,59 +49,89 @@ var PlotAxisGrid = function (_Component) {
     value: function componentDidMount() {
       this.plotAxisGridCanvas = this.refs.plotAxisGridCanvas;
       this.plotAxisGridCtx = this.plotAxisGridCanvas.getContext("2d");
-      this.drawYAxisGrid(this.plotAxisGridCtx);
+
+      // y-axis vertical line styling
+      this.plotAxisGridCtx.strokeStyle = "rgba(211,211,211, 0.6)";
+      this.plotAxisGridCtx.lineWidth = 1;
+
+      this.yAxisIntervals = this.generateYAxisLabels(this.maxY * 10);
+      this.horiGridLineCache = this.getHoriLineCanvas();
+      this.drawYAxisGrid(this.plotAxisGridCtx, this.getYAxisLabelSkipInterval(this.minY, this.maxY, this.canvasH, this.yAxisLabelPadding, 20));
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate() {
       this.minY = this.props.minY;
       this.maxY = this.props.maxY;
-      this.drawYAxisGrid(this.plotAxisGridCtx);
+      this.drawYAxisGrid(this.plotAxisGridCtx, this.getYAxisLabelSkipInterval(this.minY, this.maxY, this.canvasH, this.yAxisLabelPadding, 20));
     }
   }, {
-    key: "generateYAxisIntervals",
-    value: function generateYAxisIntervals(minY, maxY, height, labelPadding, labelTextHeight) {
-      this.yAxisIntervals = [];
-      var numOfLabelsCanFit = Math.round(height / (labelTextHeight + labelPadding));
-      var yAxisSpan = round5(maxY - minY);
-      var yAxisLabelInterval = round5(yAxisSpan / numOfLabelsCanFit);
+    key: "generateYAxisLabels",
+    value: function generateYAxisLabels(maxY) {
+      var yAxisLabels = [];
+      var yAxisLabelInterval = 1;
 
       for (var curYAxisLabel = 0; curYAxisLabel < round5(maxY); curYAxisLabel += yAxisLabelInterval) {
-        this.yAxisIntervals.push(curYAxisLabel);
+        yAxisLabels.push(curYAxisLabel);
       }
+
+      return yAxisLabels;
+    }
+  }, {
+    key: "getYAxisLabelSkipInterval",
+    value: function getYAxisLabelSkipInterval(minY, maxY, height) {
+      var labelPadding = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 20;
+      var labelTextHeight = arguments[4];
+
+      var numOfLabelsCanFit = Math.round(height / (labelTextHeight + labelPadding));
+
+      return round5((maxY - minY) / numOfLabelsCanFit);
     }
   }, {
     key: "drawYAxisGrid",
-    value: function drawYAxisGrid(ctx) {
-      this.generateYAxisIntervals(this.minY, this.maxY, this.canvasH, 20, 20);
-
+    value: function drawYAxisGrid(ctx, yAxisIntervals) {
       // clear canvas
       ctx.clearRect(0, 0, this.canvasW, this.canvasH);
       ctx.beginPath();
-      // y-axis vertical line styling
-      ctx.strokeStyle = "rgba(211,211,211, 0.6)";
-      ctx.lineWidth = 1;
 
-      for (var i = 0; i < this.yAxisIntervals.length; i++) {
-        var domY = (0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, this.minY, this.maxY, this.yAxisIntervals[i]);
-        ctx.moveTo(0, domY);
-        ctx.lineTo(this.canvasW, domY);
+      for (var i = 0; i < this.maxY; i += yAxisIntervals) {
+        var domY = Math.floor((0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, this.minY, this.maxY, this.yAxisIntervals[i]));
+        // ctx.moveTo(0, domY);
+        // ctx.lineTo(this.canvasW, domY);
+        ctx.drawImage(this.horiGridLineCache, 0, domY - 0.5);
       }
-      ctx.stroke();
 
       if (this.minY < 0) {
-        for (var _i = 0; _i < this.yAxisIntervals.length; _i++) {
-          var _domY = (0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, this.minY, this.maxY, -this.yAxisIntervals[_i]);
-          ctx.moveTo(0, _domY);
-          ctx.lineTo(this.canvasW, _domY);
+        for (var _i = yAxisIntervals; _i < this.maxY; _i += yAxisIntervals) {
+          var _domY = Math.floor((0, _PlottingUtils.toDomYCoord_Linear)(this.canvasH, this.minY, this.maxY, -this.yAxisIntervals[_i]));
+          // ctx.moveTo(0, domY);
+          // ctx.lineTo(this.canvasW, domY);
+          ctx.drawImage(this.horiGridLineCache, 0, _domY - 0.5);
         }
-        ctx.stroke();
       }
+
+      ctx.stroke();
     }
   }, {
-    key: "roundToNearestTenth",
-    value: function roundToNearestTenth(n) {
-      return (parseInt(n / 10, 10) + 1) * 10;
+    key: "getHoriLineCanvas",
+    value: function getHoriLineCanvas() {
+      var cachedHoriLineCanvas = this.cachedHoriLineCanvas;
+
+      if (cachedHoriLineCanvas === undefined) {
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext("2d");
+        canvas.width = this.canvasW;
+        canvas.height = 1;
+
+        ctx.strokeStyle = "gray";
+        ctx.lineWidth = 1;
+        ctx.moveTo(0, 0);
+        ctx.lineTo(Math.floor(canvas.width), 0);
+        ctx.stroke();
+        cachedHoriLineCanvas = canvas;
+      }
+
+      return cachedHoriLineCanvas;
     }
   }, {
     key: "render",
