@@ -35,7 +35,7 @@ class App extends PureComponent {
     this.prevPanDist = 0;
     this.dataSetCount = 4;
     this.handlePan = this.handlePan.bind(this);
-    this.handlePanned = this.handlePan.bind(this);
+    this.handlePanned = this.handlePanned.bind(this);
   }
 
   componentDidMount() {

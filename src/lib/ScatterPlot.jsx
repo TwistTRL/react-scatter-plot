@@ -59,7 +59,6 @@ class ScatterPlot extends Component {
             curDataObj[xAxisKey] >= visibleXRange[0] &&
             curDataObj[xAxisKey] <= visibleXRange[1]
           ) {
-            console.log(curDataObj)
             let domY, domX;
 
             domX = Math.floor(
