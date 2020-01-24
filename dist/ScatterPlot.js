@@ -86,7 +86,6 @@ var ScatterPlot = function (_Component) {
           for (var j = 0; j < curDataSet.length; j++) {
             var curDataObj = curDataSet[j];
             if (curDataObj[xAxisKey] >= visibleXRange[0] && curDataObj[xAxisKey] <= visibleXRange[1]) {
-              console.log(curDataObj);
               var domY = void 0,
                   domX = void 0;
 
