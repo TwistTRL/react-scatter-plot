@@ -23,7 +23,7 @@ class App extends PureComponent {
     super(props);
 
     this.state = {
-      visibleXRange: [1513058000000, 1513695600000],
+      visibleXRange: [1512058000000, 1513695600000],
       currentOverlay: null,
       dataSets: [],
       dataPointColors: ["#d50000", "#ff6d00", "#546e7a"],
@@ -33,7 +33,7 @@ class App extends PureComponent {
     };
     this.prevMaxY = 200;
     this.prevPanDist = 0;
-    this.dataSetCount = 4;
+    this.dataSetCount = 5;
     this.handlePan = this.handlePan.bind(this);
     this.handlePanned = this.handlePanned.bind(this);
   }

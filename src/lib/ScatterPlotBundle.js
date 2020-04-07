@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import isEqual from "lodash.isequal";
+import { toDomYCoord_Linear, toDomXCoord_Linear } from "./PlottingUtils";
 import ScatterPlot from "./ScatterPlot";
 import YAxis from "./YAxis";
 import PlotAxisGrid from "./PlotAxisGrid";
@@ -13,6 +14,32 @@ class ScatterPlotBundle extends Component {
     return !isEqual(this.props, nextProps) || this.state !== nextState;
   }
 
+  // TODO: convert x and y to domX and domY
+  transformDataSets(dataSets, yAxisKey, xAxisKey) {
+    let transformedDataSets = [];
+
+    dataSets.forEach((dataSet) => {
+      transformedDataSets.push(
+        dataSet.map((data) => {
+          return { x: data[xAxisKey], y: data[yAxisKey] };
+        })
+      );
+    });
+
+    return transformedDataSets;
+  }
+
+  filterDataSetsToWindow(dataSets, visibleXRange, xAxisKey) {
+    return dataSets.map((dataSet) => {
+      return dataSet.filter((data) => {
+        return (
+          data[xAxisKey] >= visibleXRange[0] &&
+          data[xAxisKey] <= visibleXRange[1]
+        );
+      });
+    });
+  }
+
   render() {
     const {
       dataSets,
@@ -24,7 +51,7 @@ class ScatterPlotBundle extends Component {
       xAxisKey,
       yAxisKey,
       configs,
-      isRenderPlotOnly
+      isRenderPlotOnly,
     } = this.props;
 
     if (dataSets.length < 1 || dataSets === undefined) {
@@ -39,13 +66,17 @@ class ScatterPlotBundle extends Component {
     let visibleYRangeDistance = 0;
     let yAxisPanelWidth = 40;
     let plotWidth = width - yAxisPanelWidth;
-
+    let filteredDataSets = this.filterDataSetsToWindow(
+      dataSets,
+      visibleXRange,
+      xAxisKey
+    );
     visibleYRangeDistance = round5(visibleYRange[1] - visibleYRange[0]);
     visibleYRange[0] -=
       yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1; // TODO: figure out y padding
     visibleYRange[1] +=
       yAxisPadding > 0 ? yAxisPadding : visibleYRangeDistance * 0.1;
-
+      console.log(filteredDataSets)
     if (!isRenderPlotOnly) {
       visibleYRange = maxY !== null ? [minY, maxY] : visibleYRange;
       return (
@@ -78,7 +109,7 @@ class ScatterPlotBundle extends Component {
                 </div>
                 <div style={{ position: "absolute" }}>
                   <ScatterPlot
-                    dataSets={dataSets}
+                    dataSets={filteredDataSets}
                     dataPointColors={dataPointColors}
                     visibleXRange={visibleXRange}
                     visibleYRange={visibleYRange}

@@ -10,15 +10,21 @@ class ScatterPlot extends Component {
     // {color: canvas}
     this.dataPointColorCanvasCache = {};
     this.dotCanvasSize = 6;
+
+    this.domXCoords = [];
+    this.domYCoords = [];
+    this.coords = [];
   }
 
   componentDidMount() {
     this.scatterPlotCanvas = this.refs.scatterPlotCanvas;
     this.scatterPlotCtx = this.scatterPlotCanvas.getContext("2d");
+    this.drawSmoothLine(this.scatterPlotCtx);
     this.drawScatterPlot(this.scatterPlotCtx);
   }
 
   componentDidUpdate(prevProps, prevState) {
+    this.drawSmoothLine(this.scatterPlotCtx);
     this.drawScatterPlot(this.scatterPlotCtx);
   }
 
@@ -34,7 +40,7 @@ class ScatterPlot extends Component {
       visibleYRange,
       xAxisKey,
       yAxisKey,
-      configs
+      configs,
     } = this.props;
 
     if (dataSets === undefined) {
@@ -46,7 +52,7 @@ class ScatterPlot extends Component {
         ? configs.plotStyling.dotSize
         : this.dotCanvasSize;
 
-    ctx.clearRect(0, 0, this.canvasW, this.canvasH);
+    // ctx.clearRect(0, 0, this.canvasW, this.canvasH);
 
     for (let i = 0; i < dataSets.length; i++) {
       let curDataSet = dataSets[i];
@@ -87,6 +93,169 @@ class ScatterPlot extends Component {
     }
   }
 
+  drawStraightLine(ctx) {
+    let {
+      dataSets,
+      dataPointColors,
+      visibleXRange,
+      visibleYRange,
+      xAxisKey,
+      yAxisKey,
+      configs,
+    } = this.props;
+
+    if (dataSets === undefined) {
+      return;
+    }
+
+    ctx.clearRect(0, 0, this.canvasW, this.canvasH);
+
+    for (let i = 0; i < dataSets.length; i++) {
+      let curDataSet = dataSets[i];
+
+      if (curDataSet.length > 0) {
+        ctx.beginPath();
+        ctx.moveTo(
+          Math.floor(
+            toDomXCoord_Linear(
+              this.canvasW,
+              visibleXRange[0],
+              visibleXRange[1],
+              curDataSet[0][xAxisKey]
+            )
+          ),
+          Math.floor(
+            toDomYCoord_Linear(
+              this.canvasH,
+              visibleYRange[0],
+              visibleYRange[1],
+              curDataSet[0][yAxisKey]
+            )
+          )
+        );
+
+        for (let j = 1; j < curDataSet.length; j++) {
+          let curDataObj = curDataSet[j];
+          let curDomX = Math.floor(
+            toDomXCoord_Linear(
+              this.canvasW,
+              visibleXRange[0],
+              visibleXRange[1],
+              curDataObj[xAxisKey]
+            )
+          );
+
+          let curDomY = Math.floor(
+            toDomYCoord_Linear(
+              this.canvasH,
+              visibleYRange[0],
+              visibleYRange[1],
+              curDataObj[yAxisKey]
+            )
+          );
+
+          ctx.lineTo(curDomX, curDomY);
+        }
+
+        ctx.strokeStyle = dataPointColors[i];
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+  }
+
+  drawSmoothLine(ctx) {
+    let {
+      dataSets,
+      dataPointColors,
+      visibleXRange,
+      visibleYRange,
+      xAxisKey,
+      yAxisKey,
+      configs,
+    } = this.props;
+
+    if (dataSets === undefined) {
+      return;
+    }
+
+    ctx.clearRect(0, 0, this.canvasW, this.canvasH);
+
+    for (let i = 0; i < dataSets.length; i++) {
+      let curDataSet = dataSets[i];
+
+      if (curDataSet.length > 0) {
+        ctx.beginPath();
+        ctx.moveTo(
+          Math.floor(
+            toDomXCoord_Linear(
+              this.canvasW,
+              visibleXRange[0],
+              visibleXRange[1],
+              curDataSet[0][xAxisKey]
+            )
+          ),
+          Math.floor(
+            toDomYCoord_Linear(
+              this.canvasH,
+              visibleYRange[0],
+              visibleYRange[1],
+              curDataSet[0][yAxisKey]
+            )
+          )
+        );
+        for (let j = 0, k = 1; k < curDataSet.length; j++, k++) {
+          let curDataObj = curDataSet[j];
+          let nextDataObj = curDataSet[k];
+          let curDomX = Math.floor(
+            toDomXCoord_Linear(
+              this.canvasW,
+              visibleXRange[0],
+              visibleXRange[1],
+              curDataObj[xAxisKey]
+            )
+          );
+          let nextDomX = Math.floor(
+            toDomXCoord_Linear(
+              this.canvasW,
+              visibleXRange[0],
+              visibleXRange[1],
+              nextDataObj[xAxisKey]
+            )
+          );
+          let curDomY = Math.floor(
+            toDomYCoord_Linear(
+              this.canvasH,
+              visibleYRange[0],
+              visibleYRange[1],
+              curDataObj[yAxisKey]
+            )
+          );
+          let nextDomY = Math.floor(
+            toDomYCoord_Linear(
+              this.canvasH,
+              visibleYRange[0],
+              visibleYRange[1],
+              nextDataObj[yAxisKey]
+            )
+          );
+          let xMiddle = (curDomX + nextDomX) / 2;
+          ctx.bezierCurveTo(
+            xMiddle,
+            curDomY,
+            xMiddle,
+            nextDomY,
+            nextDomX,
+            nextDomY
+          );
+        }
+      }
+      ctx.strokeStyle = dataPointColors[i];
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+  }
+
   getCircle(color, size = 6) {
     let cachedDataPointColorCanvas = this.dataPointColorCanvasCache[
       color + size
@@ -110,8 +279,8 @@ class ScatterPlot extends Component {
   render() {
     const styles = {
       scatterPlotCanvas: {
-        position: "absolute"
-      }
+        position: "absolute",
+      },
     };
 
     return (
